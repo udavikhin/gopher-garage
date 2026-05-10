@@ -4,14 +4,14 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/go-chi/chi/v5"
+	"github.com/udavikhin/gopher-garage/internal/api/routes"
 	"github.com/udavikhin/gopher-garage/internal/config"
 )
 
 func main() {
 	cfg := config.NewConfig()
 
-	r := chi.NewRouter()
+	r := routes.NewRouter()
 
 	server := &http.Server{
 		Addr:    ":" + cfg.Server.Port,
