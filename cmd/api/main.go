@@ -4,14 +4,18 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/udavikhin/gopher-garage/internal/config"
 )
 
 func main() {
 	cfg := config.NewConfig()
 
+	r := chi.NewRouter()
+
 	server := &http.Server{
-		Addr: ":" + cfg.Server.Port,
+		Addr:    ":" + cfg.Server.Port,
+		Handler: r,
 	}
 
 	log.Printf("Starting server on %s", server.Addr)
