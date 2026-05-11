@@ -16,6 +16,15 @@ func NewOfferHandler() *OfferHandler {
 }
 
 func (h *OfferHandler) CreateOffer(w http.ResponseWriter, r *http.Request) {
+	decoder := json.NewDecoder(r.Body)
+
+	var requestBody string
+
+	if err := decoder.Decode(&requestBody); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
 }
 
 func (h *OfferHandler) GetOffer(w http.ResponseWriter, r *http.Request) {
