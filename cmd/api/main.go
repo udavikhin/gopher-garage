@@ -2,11 +2,17 @@ package main
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
 	"net/url"
 
+	"github.com/go-chi/chi/v5"
+	"github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/jackc/pgx/v5"
 	"github.com/joho/godotenv"
 	"github.com/udavikhin/gopher-garage/internal/api/routes"
@@ -14,34 +20,79 @@ import (
 )
 
 func main() {
-	if err := godotenv.Load(); err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	loadDotEnv()
 
 	cfg := config.NewConfig()
 
+	dsn := getConnectionString(cfg.Database)
+
+	initDb(dsn)
+	runMigrations(dsn)
+
 	r := routes.NewRouter()
 
-	server := &http.Server{
-		Addr:    ":" + cfg.Server.Port,
-		Handler: r,
+	runServer(r, cfg.Server)
+}
+
+func loadDotEnv() {
+	if err := godotenv.Load(); err != nil {
+		log.Fatal("Error loading .env file")
 	}
+}
 
-	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
-		cfg.Database.User,
-		url.QueryEscape(cfg.Database.Password),
-		cfg.Database.Host,
-		cfg.Database.Port,
-		cfg.Database.Database,
-	)
-
-	fmt.Println(dsn)
+func initDb(dsn string) {
 
 	conn, err := pgx.Connect(context.Background(), dsn)
 	if err != nil {
 		log.Fatalf("Error connecting to database: %s", err)
 	}
 	defer conn.Close(context.Background())
+}
+
+func runMigrations(dsn string) {
+	log.Println("Running migrations...")
+
+	db, err := sql.Open("postgres", dsn)
+	if err != nil {
+		log.Fatalf("Error connecting to database: %s", err)
+	}
+
+	driver, err := postgres.WithInstance(db, &postgres.Config{})
+
+	m, err := migrate.NewWithDatabaseInstance(
+		"file://migrations",
+		"postgres",
+		driver,
+	)
+
+	if err != nil {
+		log.Fatalf("Error creating migrate instance: %s", err)
+	}
+
+	if err := m.Up(); err != nil {
+		if errors.Is(err, migrate.ErrNoChange) {
+			log.Printf("Nothing to migrate")
+			return
+		}
+		log.Fatalf("Error running migrations: %s", err)
+	}
+}
+
+func getConnectionString(cfg *config.DatabaseConfig) string {
+	return fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
+		cfg.User,
+		url.QueryEscape(cfg.Password),
+		cfg.Host,
+		cfg.Port,
+		cfg.Database,
+	)
+}
+
+func runServer(mux *chi.Mux, cfg *config.ServerConfig) {
+	server := &http.Server{
+		Addr:    ":" + cfg.Port,
+		Handler: mux,
+	}
 
 	log.Printf("Starting server on %s", server.Addr)
 	if err := server.ListenAndServe(); err != nil {
