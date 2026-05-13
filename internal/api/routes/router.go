@@ -6,15 +6,13 @@ import (
 	"github.com/udavikhin/gopher-garage/internal/api/handler"
 )
 
-func NewRouter() *chi.Mux {
+func NewRouter(handlers *handler.Handlers) *chi.Mux {
 	r := chi.NewRouter()
-
-	offerHandler := handler.NewOfferHandler()
 
 	r.Route("/api/v1", func(r chi.Router) {
 		r.Use(middleware.SetHeader("Content-Type", "application/json"))
 		r.Route("/offers", func(r chi.Router) {
-			r.Get("/{id}", offerHandler.GetOffer)
+			r.Get("/{id}", handlers.Offer.GetOffer)
 		})
 	})
 

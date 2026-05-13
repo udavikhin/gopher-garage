@@ -14,8 +14,11 @@ import (
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/jackc/pgx/v5"
+	"github.com/udavikhin/gopher-garage/internal/api/handler"
 	"github.com/udavikhin/gopher-garage/internal/api/routes"
 	"github.com/udavikhin/gopher-garage/internal/config"
+	repository "github.com/udavikhin/gopher-garage/internal/repository/postgres"
+	"github.com/udavikhin/gopher-garage/internal/service"
 )
 
 func main() {
@@ -28,7 +31,11 @@ func main() {
 
 	runMigrations(dsn)
 
-	r := routes.NewRouter()
+	repositories := repository.NewRepositoriesPostgres(conn)
+	services := service.NewServices(repositories)
+	handlers := handler.NewHandlers(services)
+
+	r := routes.NewRouter(handlers)
 
 	runServer(r, cfg.Server)
 }

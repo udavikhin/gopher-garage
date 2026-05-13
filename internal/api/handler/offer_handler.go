@@ -6,13 +6,17 @@ import (
 	"time"
 
 	"github.com/udavikhin/gopher-garage/internal/domain"
+	"github.com/udavikhin/gopher-garage/internal/service"
 )
 
 type OfferHandler struct {
+	services *service.Services
 }
 
-func NewOfferHandler() *OfferHandler {
-	return &OfferHandler{}
+func NewOfferHandler(services *service.Services) *OfferHandler {
+	return &OfferHandler{
+		services: services,
+	}
 }
 
 func (h *OfferHandler) CreateOffer(w http.ResponseWriter, r *http.Request) {
