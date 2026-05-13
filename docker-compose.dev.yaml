@@ -1,0 +1,11 @@
+services:
+  api:
+    build:
+      dockerfile: Dockerfile.dev
+    volumes:
+      - .:/app
+      - /app/tmp
+      - /app/bin
+  postgres:
+    ports:
+      - "5435:5432"
