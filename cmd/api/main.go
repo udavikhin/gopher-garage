@@ -14,14 +14,11 @@ import (
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/jackc/pgx/v5"
-	"github.com/joho/godotenv"
 	"github.com/udavikhin/gopher-garage/internal/api/routes"
 	"github.com/udavikhin/gopher-garage/internal/config"
 )
 
 func main() {
-	loadDotEnv()
-
 	cfg := config.NewConfig()
 
 	dsn := getConnectionString(cfg.Database)
@@ -34,14 +31,7 @@ func main() {
 	runServer(r, cfg.Server)
 }
 
-func loadDotEnv() {
-	if err := godotenv.Load(); err != nil {
-		log.Fatal("Error loading .env file")
-	}
-}
-
 func initDb(dsn string) {
-
 	conn, err := pgx.Connect(context.Background(), dsn)
 	if err != nil {
 		log.Fatalf("Error connecting to database: %s", err)
