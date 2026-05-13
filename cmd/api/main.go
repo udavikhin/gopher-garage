@@ -23,7 +23,9 @@ func main() {
 
 	dsn := getConnectionString(cfg.Database)
 
-	initDb(dsn)
+	conn := initDb(dsn)
+	defer conn.Close(context.Background())
+
 	runMigrations(dsn)
 
 	r := routes.NewRouter()
@@ -31,12 +33,12 @@ func main() {
 	runServer(r, cfg.Server)
 }
 
-func initDb(dsn string) {
+func initDb(dsn string) *pgx.Conn {
 	conn, err := pgx.Connect(context.Background(), dsn)
 	if err != nil {
 		log.Fatalf("Error connecting to database: %s", err)
 	}
-	defer conn.Close(context.Background())
+	return conn
 }
 
 func runMigrations(dsn string) {
