@@ -13,6 +13,7 @@ func NewRouter(handlers *handler.Handlers) *chi.Mux {
 		r.Use(middleware.SetHeader("Content-Type", "application/json"))
 		r.Route("/offers", func(r chi.Router) {
 			r.Get("/{id}", handlers.Offer.GetOffer)
+			r.Post("/", handlers.Offer.CreateOffer)
 		})
 	})
 

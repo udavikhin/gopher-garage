@@ -2,9 +2,11 @@ package handler
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
-	"time"
+	"strconv"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/udavikhin/gopher-garage/internal/domain"
 	"github.com/udavikhin/gopher-garage/internal/service"
 )
@@ -22,23 +24,33 @@ func NewOfferHandler(services *service.Services) *OfferHandler {
 func (h *OfferHandler) CreateOffer(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 
-	var requestBody string
+	var offerBody domain.Offer
 
-	if err := decoder.Decode(&requestBody); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+	if err := decoder.Decode(&offerBody); err != nil {
+		if err.Error() != "EOF" {
+			w.WriteHeader(http.StatusBadRequest)
+			log.Println(err)
+			return
+		}
+	}
+
+	offer, err := h.services.Offer.CreateOffer(offerBody)
+	if err != nil {
 		return
 	}
 
+	w.Write([]byte(strconv.Itoa(offer)))
 }
 
 func (h *OfferHandler) GetOffer(w http.ResponseWriter, r *http.Request) {
-	offer := &domain.Offer{
-		Id:          1,
-		User:        "udavikhin",
-		Vehicle:     "Mazda 6",
-		Description: "Продам свой автомобиль с небольшим оригинальным пробегом и без окрасов",
-		Price:       2200000,
-		CreatedAt:   time.Now(),
+	offerIdUrlParam := chi.URLParam(r, "id")
+	offerId, err := strconv.Atoi(offerIdUrlParam)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+	offer, err := h.services.Offer.GetOfferInfo(offerId)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
 	}
 
 	encodedOffer, err := json.Marshal(offer)
