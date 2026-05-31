@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/udavikhin/gopher-garage/internal/domain"
 	"github.com/udavikhin/gopher-garage/internal/service"
 )
@@ -50,7 +49,7 @@ func (h *OfferHandler) CreateOffer(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *OfferHandler) GetOffer(w http.ResponseWriter, r *http.Request) {
-	offerIdUrlParam := chi.URLParam(r, "id")
+	offerIdUrlParam := r.PathValue("id")
 	offerId, err := strconv.Atoi(offerIdUrlParam)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
@@ -102,7 +101,7 @@ func (h *OfferHandler) ListOffers(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *OfferHandler) DeleteOffer(w http.ResponseWriter, r *http.Request) {
-	offerIdUrlParam := chi.URLParam(r, "id")
+	offerIdUrlParam := r.PathValue("id")
 	offerId, err := strconv.Atoi(offerIdUrlParam)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnprocessableEntity)

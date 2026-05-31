@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
@@ -87,7 +86,7 @@ func getConnectionString(cfg *config.DatabaseConfig) string {
 	)
 }
 
-func runServer(mux *chi.Mux, cfg *config.ServerConfig) {
+func runServer(mux http.Handler, cfg *config.ServerConfig) {
 	server := &http.Server{
 		Addr:    ":" + cfg.Port,
 		Handler: mux,
