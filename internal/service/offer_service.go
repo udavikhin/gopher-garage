@@ -1,8 +1,12 @@
 package service
 
 import (
+	"context"
+	"strconv"
+
+	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/udavikhin/gopher-garage/internal/domain"
-	"github.com/udavikhin/gopher-garage/internal/repository"
+	repository "github.com/udavikhin/gopher-garage/internal/repository/postgres"
 )
 
 type OfferServiceInterface interface {
@@ -12,29 +16,47 @@ type OfferServiceInterface interface {
 	RemoveOffer(id int) error
 }
 
-func NewOfferService(repo repository.OfferRepositoryInterface) *OfferService {
+func NewOfferService(repo repository.Queries) *OfferService {
 	return &OfferService{
 		repo: repo,
 	}
 }
 
 type OfferService struct {
-	repo repository.OfferRepositoryInterface
+	repo repository.Queries
 }
 
 func (o *OfferService) CreateOffer(offer domain.Offer) (int, error) {
-	id, err := o.repo.CreateOffer(offer)
+	userId, err := strconv.Atoi(offer.User)
 	if err != nil {
 		return 0, err
 	}
 
-	return id, nil
+	id, err := o.repo.AddOffer(context.Background(), repository.AddOfferParams{
+		UserID: pgtype.Int4{
+			Int32: int32(userId),
+		},
+		Vehicle: pgtype.Text{
+			String: offer.Vehicle,
+		},
+		Description: pgtype.Text{
+			String: offer.Description,
+		},
+		Price: pgtype.Float8{
+			Float64: offer.Price,
+		},
+	})
+	if err != nil {
+		return 0, err
+	}
+
+	return int(id), nil
 }
 
-func (o *OfferService) GetOfferInfo(id int) (domain.Offer, error) {
-	offer, err := o.repo.GetOffer(id)
+func (o *OfferService) GetOfferInfo(id int) (repository.Offer, error) {
+	offer, err := o.repo.GetOfferById(context.Background(), int32(id))
 	if err != nil {
-		return domain.Offer{}, err
+		return repository.Offer{}, err
 	}
 
 	return offer, nil

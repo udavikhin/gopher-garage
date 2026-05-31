@@ -1,13 +1,13 @@
 package service
 
-import "github.com/udavikhin/gopher-garage/internal/repository"
+import repository "github.com/udavikhin/gopher-garage/internal/repository/postgres"
 
 type Services struct {
 	Offer *OfferService
 }
 
-func NewServices(repositories repository.Repositories) *Services {
+func NewServices(repo repository.Queries) *Services {
 	return &Services{
-		Offer: NewOfferService(repositories.Offer),
+		Offer: NewOfferService(repo),
 	}
 }

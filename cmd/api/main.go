@@ -31,8 +31,8 @@ func main() {
 
 	runMigrations(dsn)
 
-	repositories := repository.NewRepositoriesPostgres(conn)
-	services := service.NewServices(repositories)
+	repo := repository.New(conn)
+	services := service.NewServices(*repo)
 	handlers := handler.NewHandlers(services)
 
 	r := routes.NewRouter(handlers)
@@ -59,7 +59,7 @@ func runMigrations(dsn string) {
 	driver, err := postgres.WithInstance(db, &postgres.Config{})
 
 	m, err := migrate.NewWithDatabaseInstance(
-		"file://migrations",
+		"file://database/migrations",
 		"postgres",
 		driver,
 	)
