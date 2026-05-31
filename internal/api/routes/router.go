@@ -11,8 +11,10 @@ func NewRouter(handlers *handler.Handlers) http.Handler {
 	r := http.NewServeMux()
 
 	apiV1 := http.NewServeMux()
+	apiV1.HandleFunc("GET /offers", handlers.Offer.ListOffers)
 	apiV1.HandleFunc("GET /offers/{id}", handlers.Offer.GetOffer)
 	apiV1.HandleFunc("POST /offers", handlers.Offer.CreateOffer)
+	apiV1.HandleFunc("DELETE /offers/{id}", handlers.Offer.DeleteOffer)
 
 	r.Handle(
 		"/api/v1/",
