@@ -82,3 +82,12 @@ func (q *Queries) GetOfferById(ctx context.Context, id int32) (Offer, error) {
 	)
 	return i, err
 }
+
+const removeOffer = `-- name: RemoveOffer :exec
+DELETE FROM offers WHERE id = $1
+`
+
+func (q *Queries) RemoveOffer(ctx context.Context, id int32) error {
+	_, err := q.db.Exec(ctx, removeOffer, id)
+	return err
+}

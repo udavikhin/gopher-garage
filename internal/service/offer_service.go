@@ -62,12 +62,19 @@ func (o *OfferService) GetOfferInfo(id int) (repository.Offer, error) {
 	return offer, nil
 }
 
-func (o *OfferService) GetOfferListing() ([]domain.Offer, error) {
-	//TODO implement me
-	panic("implement me")
+func (o *OfferService) GetOfferListing() ([]repository.Offer, error) {
+	offers, err := o.repo.GetAllOffers(context.Background())
+	if err != nil {
+		return nil, err
+	}
+
+	return offers, nil
 }
 
 func (o *OfferService) RemoveOffer(id int) error {
-	//TODO implement me
-	panic("implement me")
+	if err := o.repo.RemoveOffer(context.Background(), int32(id)); err != nil {
+		return err
+	}
+
+	return nil
 }
