@@ -21,5 +21,16 @@ func NewRouter(handlers *handler.Handlers) http.Handler {
 		http.StripPrefix("/api/v1", middleware.Chain(middleware.ContentTypeJsonMiddleware)(apiV1)),
 	)
 
+	auth := http.NewServeMux()
+	auth.HandleFunc("POST /login", handlers.Auth.Login)
+	auth.HandleFunc("POST /logout", handlers.Auth.Logout)
+	auth.HandleFunc("POST /register", handlers.Auth.Register)
+	auth.HandleFunc("POST /refresh", handlers.Auth.Refresh)
+
+	r.Handle(
+		"/auth/",
+		http.StripPrefix("/auth", auth),
+	)
+
 	return middleware.Chain(middleware.LoggingMiddleware)(r)
 }
