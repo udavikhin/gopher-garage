@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/udavikhin/gopher-garage/internal/api/handler"
+	"github.com/udavikhin/gopher-garage/internal/middleware"
 )
 
 func NewRouter(handlers *handler.Handlers) http.Handler {
@@ -15,5 +16,5 @@ func NewRouter(handlers *handler.Handlers) http.Handler {
 
 	r.Handle("/api/v1/", http.StripPrefix("/api/v1", apiV1))
 
-	return r
+	return middleware.Chain(middleware.LoggingMiddleware)(r)
 }
