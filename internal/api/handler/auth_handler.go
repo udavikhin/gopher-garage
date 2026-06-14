@@ -4,8 +4,11 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/udavikhin/gopher-garage/internal/api/handler/auth"
 	repository "github.com/udavikhin/gopher-garage/internal/repository/postgres"
 	"github.com/udavikhin/gopher-garage/internal/service"
+	"github.com/udavikhin/gopher-garage/pkg/validator"
 )
 
 type AuthHandler struct {
@@ -23,17 +26,42 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {}
 func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {}
 
 func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
-	var data repository.AddUserParams
+	var data auth.AddUserRequest
 	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
-	}
-	userId, err := h.services.Auth.Register(data)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
-	w.WriteHeader(http.StatusAccepted)
+	if err := validator.Get().Struct(data); err != nil {
+		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
+		return
+	}
+
+	userParams := repository.AddUserParams{
+		Email: data.Email,
+		FirstName: pgtype.Text{
+			String: data.FirstName,
+			Valid:  true,
+		},
+		LastName: pgtype.Text{
+			String: data.LastName,
+			Valid:  true,
+		},
+		Patronymic: pgtype.Text{
+			String: data.Patronymic,
+			Valid:  true,
+		},
+		Password: data.Password,
+	}
+
+	userId, err := h.services.Auth.Register(r.Context(), userParams)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
 
 	if err := json.NewEncoder(w).Encode(userId); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

@@ -9,12 +9,12 @@ import (
 	repository "github.com/udavikhin/gopher-garage/internal/repository/postgres"
 )
 
-type OfferServiceInterface interface {
-	CreateOffer(offer domain.Offer) (int, error)
-	GetOfferInfo(id int) (domain.Offer, error)
-	GetOfferListing() ([]domain.Offer, error)
-	RemoveOffer(id int) error
-}
+// type OfferServiceInterface interface {
+// 	CreateOffer(offer domain.Offer) (int, error)
+// 	GetOfferInfo(id int) (domain.Offer, error)
+// 	GetOfferListing() ([]domain.Offer, error)
+// 	RemoveOffer(id int) error
+// }
 
 func NewOfferService(repo repository.Queries) *OfferService {
 	return &OfferService{

@@ -8,9 +8,9 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type AuthServiceInterface interface {
-	Register(data repository.AddUserParams) error
-}
+// type AuthServiceInterface interface {
+// 	Register(data repository.AddUserParams) error
+// }
 
 func NewAuthService(repo repository.Queries) *AuthService {
 	return &AuthService{
@@ -22,8 +22,8 @@ type AuthService struct {
 	repo repository.Queries
 }
 
-func (a *AuthService) Register(data repository.AddUserParams) (int, error) {
-	_, err := a.repo.GetUserByEmail(context.Background(), data.Email)
+func (a *AuthService) Register(ctx context.Context, data repository.AddUserParams) (int, error) {
+	_, err := a.repo.GetUserByEmail(ctx, data.Email)
 	if err == nil {
 		return 0, errors.New("User is already registered")
 	}
@@ -34,7 +34,7 @@ func (a *AuthService) Register(data repository.AddUserParams) (int, error) {
 	}
 	data.Password = string(passwordHash)
 
-	userId, err := a.repo.AddUser(context.Background(), data)
+	userId, err := a.repo.AddUser(ctx, data)
 	if err != nil {
 		return 0, err
 	}
