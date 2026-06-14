@@ -34,6 +34,31 @@ func (q *Queries) AddOffer(ctx context.Context, arg AddOfferParams) (int32, erro
 	return id, err
 }
 
+const addUser = `-- name: AddUser :one
+INSERT INTO users (email, first_name, last_name, patronymic, password) VALUES ($1, $2, $3, $4, $5) RETURNING id
+`
+
+type AddUserParams struct {
+	Email      string      `json:"email"`
+	FirstName  pgtype.Text `json:"first_name"`
+	LastName   pgtype.Text `json:"last_name"`
+	Patronymic pgtype.Text `json:"patronymic"`
+	Password   string      `json:"password"`
+}
+
+func (q *Queries) AddUser(ctx context.Context, arg AddUserParams) (int32, error) {
+	row := q.db.QueryRow(ctx, addUser,
+		arg.Email,
+		arg.FirstName,
+		arg.LastName,
+		arg.Patronymic,
+		arg.Password,
+	)
+	var id int32
+	err := row.Scan(&id)
+	return id, err
+}
+
 const getAllOffers = `-- name: GetAllOffers :many
 SELECT id, user_id, vehicle, description, price, created_at FROM offers
 `
@@ -79,6 +104,24 @@ func (q *Queries) GetOfferById(ctx context.Context, id int32) (Offer, error) {
 		&i.Description,
 		&i.Price,
 		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const getUserByEmail = `-- name: GetUserByEmail :one
+SELECT id, email, first_name, last_name, patronymic, password FROM users WHERE email = $1
+`
+
+func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
+	row := q.db.QueryRow(ctx, getUserByEmail, email)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.FirstName,
+		&i.LastName,
+		&i.Patronymic,
+		&i.Password,
 	)
 	return i, err
 }

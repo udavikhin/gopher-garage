@@ -4,10 +4,12 @@ import repository "github.com/udavikhin/gopher-garage/internal/repository/postgr
 
 type Services struct {
 	Offer *OfferService
+	Auth  *AuthService
 }
 
 func NewServices(repo repository.Queries) *Services {
 	return &Services{
 		Offer: NewOfferService(repo),
+		Auth:  NewAuthService(repo),
 	}
 }

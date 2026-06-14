@@ -17,6 +17,14 @@ type Offer struct {
 	CreatedAt   pgtype.Timestamp `json:"created_at"`
 }
 
+type RefreshToken struct {
+	ID        int32            `json:"id"`
+	UserID    pgtype.Int4      `json:"user_id"`
+	TokenHash string           `json:"token_hash"`
+	ExpriesAt interface{}      `json:"expries_at"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+}
+
 type User struct {
 	ID         int32       `json:"id"`
 	Email      string      `json:"email"`
