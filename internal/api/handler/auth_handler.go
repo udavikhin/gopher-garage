@@ -50,7 +50,7 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		},
 		Patronymic: pgtype.Text{
 			String: data.Patronymic,
-			Valid:  true,
+			Valid:  data.Patronymic != "",
 		},
 		Password: data.Password,
 	}

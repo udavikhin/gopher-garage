@@ -8,10 +8,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// type AuthServiceInterface interface {
-// 	Register(data repository.AddUserParams) error
-// }
-
 func NewAuthService(repo repository.Queries) *AuthService {
 	return &AuthService{
 		repo: repo,
