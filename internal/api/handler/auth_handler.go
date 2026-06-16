@@ -21,12 +21,30 @@ func NewAuthHandler(services *service.Services) *AuthHandler {
 	}
 }
 
-func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {}
+func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
+	var data auth.LoginUserRequest
+	err := json.NewDecoder(r.Body).Decode(&data)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if err := validator.Get().Struct(data); err != nil {
+		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
+		return
+	}
+
+	userId, err := h.services.Auth.Login(r.Context(), data.Email, data.Password)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+}
 
 func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {}
 
 func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
-	var data auth.AddUserRequest
+	var data auth.RegisterUserRequest
 	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
