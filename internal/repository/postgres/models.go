@@ -21,7 +21,7 @@ type RefreshToken struct {
 	ID        int32            `json:"id"`
 	UserID    pgtype.Int4      `json:"user_id"`
 	TokenHash string           `json:"token_hash"`
-	ExpriesAt interface{}      `json:"expries_at"`
+	ExpiresAt pgtype.Timestamp `json:"expires_at"`
 	CreatedAt pgtype.Timestamp `json:"created_at"`
 }
 

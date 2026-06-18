@@ -34,6 +34,29 @@ func (q *Queries) AddOffer(ctx context.Context, arg AddOfferParams) (int32, erro
 	return id, err
 }
 
+const addRefreshToken = `-- name: AddRefreshToken :one
+INSERT INTO refresh_tokens (user_id, token_hash, expires_at, created_at) VALUES ($1, $2, $3, $4) RETURNING id
+`
+
+type AddRefreshTokenParams struct {
+	UserID    pgtype.Int4      `json:"user_id"`
+	TokenHash string           `json:"token_hash"`
+	ExpiresAt pgtype.Timestamp `json:"expires_at"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+}
+
+func (q *Queries) AddRefreshToken(ctx context.Context, arg AddRefreshTokenParams) (int32, error) {
+	row := q.db.QueryRow(ctx, addRefreshToken,
+		arg.UserID,
+		arg.TokenHash,
+		arg.ExpiresAt,
+		arg.CreatedAt,
+	)
+	var id int32
+	err := row.Scan(&id)
+	return id, err
+}
+
 const addUser = `-- name: AddUser :one
 INSERT INTO users (email, first_name, last_name, patronymic, password) VALUES ($1, $2, $3, $4, $5) RETURNING id
 `

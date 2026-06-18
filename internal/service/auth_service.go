@@ -3,11 +3,15 @@ package service
 import (
 	"context"
 	"crypto/rand"
+	"crypto/sha256"
 	"encoding/base64"
+	"encoding/hex"
 	"errors"
+	"strconv"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/jackc/pgx/v5/pgtype"
 	repository "github.com/udavikhin/gopher-garage/internal/repository/postgres"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -38,26 +42,58 @@ func (a *AuthService) Login(ctx context.Context, email string, password string) 
 		return &AccessToken{}, errors.New("Invalid password")
 	}
 
-}
-
-func (a *AuthService) GenerateAccessToken(userId int) (*AccessToken, error) {
-	claims := jwt.RegisteredClaims{
-		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * 30)),
-		IssuedAt:  jwt.NewNumericDate(time.Now()),
-		ID:        string(userId),
+	tokens, err := a.generateAccessToken(int(user.ID))
+	if err != nil {
+		return &AccessToken{}, err
 	}
 
-	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenHash := sha256.Sum256([]byte(tokens.Refresh))
+
+	_, err = a.repo.AddRefreshToken(ctx, repository.AddRefreshTokenParams{
+		UserID: pgtype.Int4{
+			Int32: user.ID,
+			Valid: true,
+		},
+		TokenHash: hex.EncodeToString(tokenHash[:]),
+		ExpiresAt: pgtype.Timestamp{
+			Time:  time.Now().Add(time.Hour * 24),
+			Valid: true,
+		},
+	})
+	if err != nil {
+		return &AccessToken{}, err
+	}
+
+	return tokens, nil
+}
+
+func (a *AuthService) generateAccessToken(userId int) (*AccessToken, error) {
+	token := a.generateJwt(userId)
 	// TODO: key to .env
 	signingKey := []byte("llamapalooza")
-	ss, err := jwtToken.SignedString(signingKey)
+	ss, err := token.SignedString(signingKey)
+	if err != nil {
+		return &AccessToken{}, err
+	}
+	refresh, err := a.generateRefreshToken()
 	if err != nil {
 		return &AccessToken{}, err
 	}
 
 	return &AccessToken{
-		Jwt: ss,
+		Jwt:     ss,
+		Refresh: refresh,
 	}, nil
+}
+
+func (a *AuthService) generateJwt(userId int) *jwt.Token {
+	claims := jwt.RegisteredClaims{
+		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * 30)),
+		IssuedAt:  jwt.NewNumericDate(time.Now()),
+		ID:        strconv.Itoa(userId),
+	}
+
+	return jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 }
 
 func (a *AuthService) generateRefreshToken() (string, error) {

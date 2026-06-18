@@ -29,7 +29,7 @@ func NewRouter(handlers *handler.Handlers) http.Handler {
 
 	r.Handle(
 		"/auth/",
-		http.StripPrefix("/auth", auth),
+		http.StripPrefix("/auth", middleware.Chain(middleware.ContentJsonMiddleware)(auth)),
 	)
 
 	return middleware.Chain(middleware.LoggingMiddleware)(r)

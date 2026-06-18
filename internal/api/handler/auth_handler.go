@@ -34,9 +34,14 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userId, err := h.services.Auth.Login(r.Context(), data.Email, data.Password)
+	accessToken, err := h.services.Auth.Login(r.Context(), data.Email, data.Password)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if err := json.NewEncoder(w).Encode(accessToken); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 }
