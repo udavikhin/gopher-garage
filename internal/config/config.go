@@ -7,12 +7,14 @@ import (
 type Config struct {
 	Server   *ServerConfig
 	Database *DatabaseConfig
+	Auth     *AuthConfig
 }
 
 func NewConfig() *Config {
 	return &Config{
 		Server:   NewServerConfig(),
 		Database: NewDatabaseConfig(),
+		Auth:     NewAuthConfig(),
 	}
 }
 

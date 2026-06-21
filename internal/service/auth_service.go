@@ -7,44 +7,49 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"errors"
-	"strconv"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/udavikhin/gopher-garage/internal/config"
+	"github.com/udavikhin/gopher-garage/internal/domain"
 	repository "github.com/udavikhin/gopher-garage/internal/repository/postgres"
 	"golang.org/x/crypto/bcrypt"
 )
 
-func NewAuthService(repo repository.Queries) *AuthService {
+func NewAuthService(repo repository.Queries, config *config.AuthConfig) *AuthService {
 	return &AuthService{
-		repo: repo,
+		repo:   repo,
+		config: config,
 	}
 }
 
 type AuthService struct {
-	repo repository.Queries
+	repo   repository.Queries
+	config *config.AuthConfig
 }
 
 // TODO: move to a more appropriate place, review structure
-type AccessToken struct {
-	Jwt     string
+type TokenPair struct {
+	JWT     string
 	Refresh string
 }
 
-func (a *AuthService) Login(ctx context.Context, email string, password string) (*AccessToken, error) {
+func (a *AuthService) Login(ctx context.Context, email string, password string) (*TokenPair, error) {
+	credentialsError := errors.New("invalid login or password")
+
 	user, err := a.repo.GetUserByEmail(ctx, email)
 	if err != nil {
-		return &AccessToken{}, errors.New("User does not exist")
+		return nil, credentialsError
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
-		return &AccessToken{}, errors.New("Invalid password")
+		return nil, credentialsError
 	}
 
-	tokens, err := a.generateAccessToken(int(user.ID))
+	tokens, err := a.generateTokenPair(int(user.ID))
 	if err != nil {
-		return &AccessToken{}, err
+		return nil, err
 	}
 
 	tokenHash := sha256.Sum256([]byte(tokens.Refresh))
@@ -56,41 +61,42 @@ func (a *AuthService) Login(ctx context.Context, email string, password string) 
 		},
 		TokenHash: hex.EncodeToString(tokenHash[:]),
 		ExpiresAt: pgtype.Timestamp{
-			Time:  time.Now().Add(time.Hour * 24),
+			Time:  time.Now().Add(a.config.RefreshTokenTTL),
 			Valid: true,
 		},
 	})
 	if err != nil {
-		return &AccessToken{}, err
+		return nil, err
 	}
 
 	return tokens, nil
 }
 
-func (a *AuthService) generateAccessToken(userId int) (*AccessToken, error) {
-	token := a.generateJwt(userId)
-	// TODO: key to .env
-	signingKey := []byte("llamapalooza")
+func (a *AuthService) generateTokenPair(userID int) (*TokenPair, error) {
+	token := a.generateJWT(userID)
+	signingKey := []byte(a.config.JWTSecret)
 	ss, err := token.SignedString(signingKey)
 	if err != nil {
-		return &AccessToken{}, err
+		return nil, err
 	}
 	refresh, err := a.generateRefreshToken()
 	if err != nil {
-		return &AccessToken{}, err
+		return nil, err
 	}
 
-	return &AccessToken{
-		Jwt:     ss,
+	return &TokenPair{
+		JWT:     ss,
 		Refresh: refresh,
 	}, nil
 }
 
-func (a *AuthService) generateJwt(userId int) *jwt.Token {
-	claims := jwt.RegisteredClaims{
-		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * 30)),
-		IssuedAt:  jwt.NewNumericDate(time.Now()),
-		ID:        strconv.Itoa(userId),
+func (a *AuthService) generateJWT(userID int) *jwt.Token {
+	claims := domain.JWTClaims{
+		UserID: userID,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(a.config.AccessTokenTTL)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+		},
 	}
 
 	return jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -102,6 +108,10 @@ func (a *AuthService) generateRefreshToken() (string, error) {
 		return "", err
 	}
 	return base64.URLEncoding.EncodeToString(bytes), nil
+}
+
+func (a *AuthService) GetRefreshTokenTTL() time.Duration {
+	return a.config.RefreshTokenTTL
 }
 
 func (a *AuthService) Register(ctx context.Context, data repository.AddUserParams) (int, error) {

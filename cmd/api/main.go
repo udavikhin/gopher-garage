@@ -31,10 +31,10 @@ func main() {
 	runMigrations(dsn)
 
 	repo := repository.New(conn)
-	services := service.NewServices(*repo)
+	services := service.NewServices(*repo, cfg)
 	handlers := handler.NewHandlers(services)
 
-	r := routes.NewRouter(handlers)
+	r := routes.NewRouter(handlers, cfg)
 
 	runServer(r, cfg.Server)
 }

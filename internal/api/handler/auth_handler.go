@@ -34,13 +34,23 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	accessToken, err := h.services.Auth.Login(r.Context(), data.Email, data.Password)
+	tokenPair, err := h.services.Auth.Login(r.Context(), data.Email, data.Password)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
 
-	if err := json.NewEncoder(w).Encode(accessToken); err != nil {
+	http.SetCookie(w, &http.Cookie{
+		Name:     "refresh_token",
+		Value:    tokenPair.Refresh,
+		HttpOnly: true,
+		Secure:   true,
+		SameSite: http.SameSiteStrictMode,
+		Path:     "/auth/refresh",
+		MaxAge:   int(h.services.Auth.GetRefreshTokenTTL().Seconds()),
+	})
+
+	if err := json.NewEncoder(w).Encode(map[string]string{"access_token": tokenPair.JWT}); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

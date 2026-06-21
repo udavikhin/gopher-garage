@@ -4,17 +4,21 @@ import (
 	"net/http"
 
 	"github.com/udavikhin/gopher-garage/internal/api/handler"
+	"github.com/udavikhin/gopher-garage/internal/config"
 	"github.com/udavikhin/gopher-garage/internal/middleware"
 )
 
-func NewRouter(handlers *handler.Handlers) http.Handler {
+func NewRouter(handlers *handler.Handlers, cfg *config.Config) http.Handler {
 	r := http.NewServeMux()
+
+	authSecret := []byte(cfg.Auth.JWTSecret)
+	authMiddleware := middleware.AuthMiddleware(authSecret)
 
 	apiV1 := http.NewServeMux()
 	apiV1.HandleFunc("GET /offers", handlers.Offer.ListOffers)
 	apiV1.HandleFunc("GET /offers/{id}", handlers.Offer.GetOffer)
-	apiV1.HandleFunc("POST /offers", handlers.Offer.CreateOffer)
-	apiV1.HandleFunc("DELETE /offers/{id}", handlers.Offer.DeleteOffer)
+	apiV1.Handle("POST /offers", authMiddleware(http.HandlerFunc(handlers.Offer.CreateOffer)))
+	apiV1.Handle("DELETE /offers/{id}", authMiddleware(http.HandlerFunc(handlers.Offer.DeleteOffer)))
 
 	r.Handle(
 		"/api/v1/",
