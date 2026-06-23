@@ -1,0 +1,31 @@
+@use "../abstracts/variables" as *;
+
+body {
+  font-family: $font-family-body;
+  font-size: 14px;
+  line-height: 1.5;
+  color: $font-primary;
+  background: $bg-page;
+}
+
+.h-display-l { font-family: $font-family-display; font-size: 36px; font-weight: 800; line-height: 1.15; }
+.h-display-m { font-family: $font-family-display; font-size: 28px; font-weight: 700; line-height: 1.2; }
+.h-display-s { font-family: $font-family-display; font-size: 22px; font-weight: 700; line-height: 1.25; }
+
+.t-lead { font-size: 16px; line-height: 1.55; color: $font-secondary; }
+.t-body { font-size: 14px; line-height: 1.5; }
+.t-small { font-size: 13px; line-height: 1.5; color: $font-secondary; }
+.t-caption { font-size: 12px; line-height: 1.4; color: $font-tertiary; }
+.t-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: $font-tertiary;
+}
+
+.t-mono { font-variant-numeric: tabular-nums; }
+.t-muted { color: $font-tertiary; }
+.t-secondary { color: $font-secondary; }
+.t-inverse { color: $font-inverse; }
+.t-brand { color: $brand-primary; }

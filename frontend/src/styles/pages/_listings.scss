@@ -1,0 +1,105 @@
+@use "../abstracts/variables" as *;
+@use "../abstracts/mixins" as *;
+
+.listings {
+  &__head {
+    @include page-container;
+    padding-block: $space-6;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: $space-4;
+
+    @include below($bp-md) { flex-direction: column; align-items: stretch; }
+  }
+
+  &__title {
+    font-family: $font-family-display;
+    font-size: 28px;
+    font-weight: 700;
+  }
+
+  &__hint {
+    color: $font-tertiary;
+    font-size: 14px;
+    margin-top: 4px;
+  }
+
+  &__body {
+    @include page-container;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: $space-6;
+    padding-bottom: $space-10;
+    align-items: start;
+
+    @include below($bp-lg) { grid-template-columns: 1fr; }
+  }
+
+  &__pagination {
+    @include page-container;
+    padding-block: $space-2 $space-10;
+    display: flex;
+    justify-content: center;
+  }
+}
+
+.filter-card {
+  @include surface;
+  padding: $space-6;
+  display: flex;
+  flex-direction: column;
+  gap: $space-6;
+  position: sticky;
+  top: $space-6;
+
+  &__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h3 {
+      font-family: $font-family-display;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    a {
+      font-size: 13px;
+      color: $brand-primary;
+      font-weight: 500;
+    }
+  }
+
+  &__group {
+    display: flex;
+    flex-direction: column;
+    gap: $space-2;
+
+    h4 {
+      font-size: 13px;
+      font-weight: 600;
+    }
+  }
+
+  &__range {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: $space-2;
+  }
+
+  &__options {
+    display: flex;
+    flex-direction: column;
+    gap: $space-3;
+  }
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $space-4;
+
+  @include below($bp-md) { grid-template-columns: repeat(2, 1fr); }
+  @include below($bp-sm) { grid-template-columns: 1fr; }
+}

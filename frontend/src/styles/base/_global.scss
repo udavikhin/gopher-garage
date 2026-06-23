@@ -1,0 +1,36 @@
+@use "../abstracts/variables" as *;
+@use "../abstracts/mixins" as *;
+
+.container {
+  @include page-container;
+}
+
+.icon {
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+.divider {
+  height: 1px;
+  width: 100%;
+  background: $border-subtle;
+  border: 0;
+}
+
+.stack { display: flex; flex-direction: column; }
+.row   { display: flex; flex-direction: row; }
+.center { align-items: center; justify-content: center; }
+.between { justify-content: space-between; }
+.middle { align-items: center; }
+.wrap { flex-wrap: wrap; }
+.grow { flex: 1; }
+
+@each $size, $val in (
+  1: $space-1, 2: $space-2, 3: $space-3, 4: $space-4,
+  5: $space-5, 6: $space-6, 8: $space-8, 10: $space-10, 12: $space-12
+) {
+  .gap-#{$size} { gap: $val; }
+}

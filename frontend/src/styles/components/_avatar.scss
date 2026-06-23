@@ -1,0 +1,45 @@
+@use "../abstracts/variables" as *;
+
+.avatar {
+  --size: 40px;
+  --bg: #{$info-soft};
+  --fg: #{$brand-primary-dark};
+
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  background: var(--bg);
+  color: var(--fg);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: calc(var(--size) * 0.34);
+  position: relative;
+  flex-shrink: 0;
+
+  &--xs { --size: 24px; }
+  &--sm { --size: 32px; }
+  &--md { --size: 40px; }
+  &--lg { --size: 56px; }
+  &--xl { --size: 80px; }
+
+  // Цветовые пресеты для разных пользователей.
+  &--amber  { --bg: #fef3c7; --fg: #92400e; }
+  &--violet { --bg: #ddd6fe; --fg: #5b21b6; }
+  &--green  { --bg: #bbf7d0; --fg: #15803d; }
+  &--orange { --bg: #fed7aa; --fg: #9a3412; }
+  &--red    { --bg: #fecaca; --fg: #991b1b; }
+
+  &--online::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: calc(var(--size) * 0.28);
+    height: calc(var(--size) * 0.28);
+    background: $success;
+    border-radius: 50%;
+    border: 2px solid $bg-surface;
+  }
+}

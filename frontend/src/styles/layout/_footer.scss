@@ -1,0 +1,43 @@
+@use "../abstracts/variables" as *;
+@use "../abstracts/mixins" as *;
+
+.site-footer {
+  background: $bg-dark;
+  color: $font-inverse;
+  margin-top: auto;
+
+  &__inner {
+    @include page-container;
+    padding-block: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $space-6;
+  }
+
+  &__copy {
+    color: $font-tertiary;
+    font-size: 12px;
+  }
+
+  &__links {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+
+    a {
+      color: $font-tertiary;
+      font-size: 12px;
+
+      &:hover { color: $font-inverse; }
+    }
+  }
+
+  @include below($bp-md) {
+    &__inner {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: $space-4;
+    }
+  }
+}

@@ -1,0 +1,150 @@
+@use "../abstracts/variables" as *;
+@use "../abstracts/mixins" as *;
+
+.help {
+  @include page-container;
+  padding-block: $space-12 $space-12;
+  display: flex;
+  flex-direction: column;
+  gap: $space-12;
+
+  &__hero {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $space-4;
+  }
+
+  &__title {
+    font-family: $font-family-display;
+    font-size: 36px;
+    font-weight: 800;
+  }
+
+  &__sub { color: $font-secondary; font-size: 16px; }
+
+  &__search {
+    width: 100%;
+    max-width: 640px;
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    padding: 14px 16px;
+    @include surface;
+    margin-top: $space-2;
+
+    input {
+      flex: 1;
+      border: 0;
+      outline: none;
+      font-size: 14px;
+      background: transparent;
+    }
+  }
+
+  &__section {
+    display: flex;
+    flex-direction: column;
+    gap: $space-6;
+
+    h2 {
+      font-family: $font-family-display;
+      font-size: 22px;
+      font-weight: 700;
+    }
+  }
+
+  &__topics {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: $space-4;
+
+    @include below($bp-md) { grid-template-columns: 1fr; }
+  }
+
+  &__topic {
+    @include surface;
+    padding: $space-6;
+    display: flex;
+    flex-direction: column;
+    gap: $space-3;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.15s;
+
+    &:hover { border-color: $border-default; }
+
+    .icon-tile {
+      width: 44px;
+      height: 44px;
+      border-radius: $radius-md;
+      background: $info-soft;
+      color: $brand-primary-dark;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      .icon { width: 20px; height: 20px; }
+    }
+
+    h3 {
+      font-family: $font-family-display;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    p { font-size: 13px; color: $font-secondary; line-height: 1.5; }
+  }
+
+  &__faq {
+    @include surface;
+    overflow: hidden;
+  }
+
+  &__faq-item {
+    border-top: 1px solid $border-subtle;
+    padding: $space-5 $space-6;
+
+    &:first-child { border-top: 0; }
+
+    summary {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: $space-3;
+      cursor: pointer;
+      font-weight: 600;
+      list-style: none;
+
+      &::-webkit-details-marker { display: none; }
+    }
+
+    p {
+      margin-top: $space-3;
+      color: $font-secondary;
+      line-height: 1.6;
+    }
+  }
+
+  &__cta {
+    @include surface;
+    background: $info-soft;
+    border-color: #7dd3fc;
+    padding: $space-8;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: $space-6;
+    flex-wrap: wrap;
+
+    h3 {
+      font-family: $font-family-display;
+      font-size: 20px;
+      font-weight: 700;
+      color: $brand-primary-dark;
+    }
+
+    p { color: $brand-primary-dark; }
+  }
+}

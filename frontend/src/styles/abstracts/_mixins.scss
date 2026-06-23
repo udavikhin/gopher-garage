@@ -1,0 +1,44 @@
+@use "variables" as *;
+
+@mixin page-container {
+  max-width: $container-max;
+  margin: 0 auto;
+  padding-inline: $page-padding-x;
+
+  @media (max-width: $bp-md) {
+    padding-inline: $space-4;
+  }
+}
+
+@mixin surface {
+  background: $bg-surface;
+  border: 1px solid $border-subtle;
+  border-radius: $radius-lg;
+}
+
+@mixin below($bp) {
+  @media (max-width: $bp - 1px) {
+    @content;
+  }
+}
+
+@mixin above($bp) {
+  @media (min-width: $bp) {
+    @content;
+  }
+}
+
+@mixin truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin button-reset {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}

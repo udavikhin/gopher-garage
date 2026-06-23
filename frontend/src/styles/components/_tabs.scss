@@ -1,0 +1,73 @@
+@use "../abstracts/variables" as *;
+
+.tabs {
+  display: flex;
+  border-bottom: 1px solid $border-subtle;
+  gap: 0;
+  overflow-x: auto;
+
+  &__item {
+    padding: 10px 20px;
+    font-size: 14px;
+    color: $font-secondary;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.15s, border-color 0.15s;
+
+    &--active {
+      color: $font-primary;
+      font-weight: 600;
+      border-bottom-color: $brand-primary;
+    }
+
+    &:hover { color: $font-primary; }
+  }
+}
+
+.pill-tabs {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  background: $bg-muted;
+  border-radius: $radius-md;
+
+  &__item {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    color: $font-secondary;
+    cursor: pointer;
+    transition: background-color 0.15s, color 0.15s, font-weight 0.15s;
+
+    &--active {
+      background: $bg-surface;
+      color: $font-primary;
+      font-weight: 600;
+      border: 1px solid $border-subtle;
+    }
+  }
+}
+
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: $font-tertiary;
+  flex-wrap: wrap;
+
+  &__sep {
+    width: 12px;
+    height: 12px;
+    color: $font-tertiary;
+  }
+
+  &__item--current {
+    color: $font-secondary;
+    font-weight: 600;
+  }
+}

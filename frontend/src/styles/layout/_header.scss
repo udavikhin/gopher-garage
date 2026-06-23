@@ -1,0 +1,107 @@
+@use "../abstracts/variables" as *;
+@use "../abstracts/mixins" as *;
+
+.site-header {
+  background: $bg-surface;
+  border-bottom: 1px solid $border-subtle;
+
+  &__inner {
+    @include page-container;
+    padding-block: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $space-6;
+
+    @include below($bp-md) {
+      padding-block: 14px;
+    }
+  }
+
+  &__left,
+  &__right {
+    display: flex;
+    align-items: center;
+    gap: $space-6;
+  }
+
+  &__right { gap: $space-3; }
+
+  &__nav {
+    display: flex;
+    align-items: center;
+    gap: $space-6;
+
+    a {
+      font-size: 14px;
+      color: $font-secondary;
+
+      &.is-active {
+        color: $font-primary;
+        font-weight: 600;
+      }
+
+      &:hover { color: $font-primary; }
+    }
+
+    @include below($bp-lg) { display: none; }
+  }
+
+  &__city {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: $bg-muted;
+    border-radius: $radius-md;
+    font-size: 13px;
+    font-weight: 500;
+    color: $font-primary;
+    cursor: pointer;
+
+    .icon { width: 14px; height: 14px; color: $font-secondary; }
+
+    @include below($bp-md) { display: none; }
+  }
+
+  &__avatar {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+
+  &__mark {
+    width: 36px;
+    height: 36px;
+    border-radius: $radius-md;
+    background: $brand-primary;
+    color: $font-inverse;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    .icon { width: 22px; height: 22px; }
+  }
+
+  &__wordmark {
+    font-family: $font-family-display;
+    font-size: 18px;
+    font-weight: 700;
+    color: $font-primary;
+
+    .slash { color: $brand-primary; }
+  }
+
+  &--sm {
+    .brand__mark { width: 32px; height: 32px; border-radius: 8px; }
+    .brand__wordmark { font-size: 15px; }
+  }
+
+  &--inverse .brand__wordmark { color: $font-inverse; }
+}

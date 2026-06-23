@@ -1,0 +1,132 @@
+@use "../abstracts/variables" as *;
+@use "../abstracts/mixins" as *;
+
+.card {
+  @include surface;
+  padding: $space-8;
+  display: flex;
+  flex-direction: column;
+  gap: $space-6;
+}
+
+.card--lg {
+  padding: $space-10;
+}
+
+.card--flush {
+  padding: 0;
+  overflow: hidden;
+}
+
+.listing-card {
+  @include surface;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s, transform 0.15s;
+
+  &:hover {
+    border-color: $border-default;
+    transform: translateY(-2px);
+  }
+
+  &__media {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    background: $bg-muted;
+    object-fit: cover;
+  }
+
+  &__body {
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  &__price {
+    font-family: $font-family-display;
+    font-size: 18px;
+    font-weight: 700;
+    color: $font-primary;
+  }
+
+  &__title {
+    font-size: 13px;
+    font-weight: 600;
+    color: $font-primary;
+  }
+
+  &__meta {
+    font-size: 12px;
+    color: $font-tertiary;
+  }
+
+  &__location {
+    font-size: 11px;
+    color: $font-tertiary;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+}
+
+.kpi-card {
+  @include surface;
+  padding: $space-5;
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+
+  &__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__label {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-2;
+    font-size: 13px;
+    font-weight: 500;
+    color: $font-secondary;
+  }
+
+  &__icon {
+    width: 36px;
+    height: 36px;
+    border-radius: $radius-md;
+    background: $info-soft;
+    color: $brand-primary-dark;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    .icon { width: 18px; height: 18px; }
+  }
+
+  &__value {
+    font-family: $font-family-display;
+    font-size: 36px;
+    font-weight: 800;
+    color: $font-primary;
+    line-height: 1;
+  }
+
+  &__trend {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: $success-soft;
+    color: $success-strong;
+    font-size: 11px;
+    font-weight: 700;
+
+    .icon { width: 12px; height: 12px; }
+  }
+}
