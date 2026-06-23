@@ -1,3 +1,5 @@
+import {Link} from "react-router-dom";
+
 const Header = () => {
     return (
         <header className="site-header">
@@ -8,8 +10,8 @@ const Header = () => {
                         <span className="brand__wordmark">Gopher Garage</span>
                     </a>
                     <nav className="site-header__nav">
-                        <a href="listings.html">Купить</a>
-                        <a href="post.html">Продать</a>
+                        <Link to="/">Купить</Link>
+                        <Link to="/offers/create">Продать</Link>
                         <a href="help.html">Помощь</a>
                     </nav>
                 </div>

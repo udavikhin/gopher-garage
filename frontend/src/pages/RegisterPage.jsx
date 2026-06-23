@@ -1,12 +1,14 @@
+import {Link} from "react-router-dom";
+
 const RegisterPage = () => {
     return (
         <main className="auth">
             <section className="auth__form-side">
-                <a className="brand" href="index.html">
+                <Link to="/" className="brand">
                     <span className="brand__mark"><svg className="icon"><use
                         href="assets/icons/sprite.svg#i-car"/></svg></span>
                     <span className="brand__wordmark">Gopher Garage</span>
-                </a>
+                </Link>
 
                 <div className="auth__form-wrap">
                     <form className="auth__form">
