@@ -5,14 +5,14 @@ const Header = () => {
         <header className="site-header">
             <div className="site-header__inner">
                 <div className="site-header__left">
-                    <a className="brand" href="index.html">
+                    <Link className="brand" to="/">
                         <span className="brand__mark"><svg className="icon"><use href="assets/icons/sprite.svg#i-car"/></svg></span>
                         <span className="brand__wordmark">Gopher Garage</span>
-                    </a>
+                    </Link>
                     <nav className="site-header__nav">
-                        <Link to="/">Купить</Link>
+                        <Link to="/offers">Купить</Link>
                         <Link to="/offers/create">Продать</Link>
-                        <a href="help.html">Помощь</a>
+                        <Link to="/help">Помощь</Link>
                     </nav>
                 </div>
                 <div className="site-header__right">
@@ -25,12 +25,12 @@ const Header = () => {
                             <use href="assets/icons/sprite.svg#i-caret-down"/>
                         </svg>
                     </button>
-                    <a className="btn btn--primary" href="post.html">
+                    <Link className="btn btn--primary" to="/offers/create">
                         <svg className="icon">
                             <use href="assets/icons/sprite.svg#i-plus"/>
                         </svg>
                         Разместить объявление
-                    </a>
+                    </Link>
                     <div className="avatar avatar--md" aria-label="Иван Иванов">ИИ</div>
                 </div>
             </div>
