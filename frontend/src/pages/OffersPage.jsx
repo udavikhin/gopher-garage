@@ -1,4 +1,13 @@
+import {useState} from "react";
+import cars from "../data/cars.json";
+
 const OffersPage = () => {
+
+    const [selectedMake, setSelectedMake] = useState('');
+
+    const makes = Object.keys(cars.brands);
+    const models = selectedMake ? cars.brands[selectedMake] : [];
+
     return (
         <section className="listings">
             <div className="listings__head">
@@ -23,10 +32,25 @@ const OffersPage = () => {
 
                     <div className="filter-card__group">
                         <h4>Марка</h4>
-                        <select className="select">
-                            <option>Все марки</option>
-                            <option>BMW</option>
-                            <option>Toyota</option>
+                        <select
+                            className="select"
+                            defaultValue=""
+                            onChange={(e) => setSelectedMake(e.target.value)}
+                        >
+                            <option value="" disabled>Все марки</option>
+                            {makes.map((make) => (
+                                <option key={make} value={make}>{make}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="filter-card__group">
+                        <h4>Модель</h4>
+                        <select className="select" defaultValue="">
+                            <option value="" disabled>Все модели</option>
+                            {models.map((model) => (
+                                <option key={model} value={model}>{model}</option>
+                            ))}
                         </select>
                     </div>
 
