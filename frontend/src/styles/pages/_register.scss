@@ -64,6 +64,10 @@
     a { color: $brand-primary; font-weight: 600; }
   }
 
+  &__error {
+    color: $danger;
+  }
+
   &__brand-title {
     font-family: $font-family-display;
     font-size: 42px;

@@ -2,7 +2,8 @@ import {Link} from "react-router-dom";
 import {useAuth} from "../context/AuthContext.jsx";
 
 const Header = () => {
-    const {isAuthorized} = useAuth()
+    const {isAuthenticated} = useAuth()
+    console.log(isAuthenticated)
 
     return (
         <header className="site-header">
@@ -28,7 +29,7 @@ const Header = () => {
                             <use href="/assets/icons/sprite.svg#i-caret-down"/>
                         </svg>
                     </button>
-                    {isAuthorized ?
+                    {isAuthenticated ?
                         (<>
                             <Link className="btn btn--primary" to="/offers/create">
                                 <svg className="icon">

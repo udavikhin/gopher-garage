@@ -1,9 +1,10 @@
 import {useAuth} from "../context/AuthContext.jsx";
 import {useState} from "react";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 
 function LoginForm() {
     const {login} = useAuth()
+    const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
         email: '',
@@ -18,10 +19,16 @@ function LoginForm() {
         }))
     }
 
-    const handleSubmit = (e) => {
+    const [error, setError] = useState(null)
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('login attempt')
-        login(formData);
+        try {
+            await login(formData.email, formData.password);
+            navigate("/");
+        } catch (e) {
+            setError(e.message)
+        }
     }
 
     return (
@@ -56,6 +63,7 @@ function LoginForm() {
             </label>
 
             <button className="btn btn--primary btn--block btn--lg" type="submit">Войти</button>
+            { error && <p className="auth__error">{error}</p>}
 
             <p className="auth__signin">Нет аккаунта? <Link to="/register">Создать</Link></p>
         </form>

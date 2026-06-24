@@ -9,11 +9,11 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
         await authClient.post('login', {email, password}).then((response) => {
-            const token = response.data?.accessToken;
+            const token = response.data?.access_token;
             setAccessToken(token);
             setAuthHeader(token);
         }).catch((e) => {
-            console.log(e)
+            throw new Error(e?.response?.data ?? "Произошла ошибка при попытке входа")
         })
     }
 
