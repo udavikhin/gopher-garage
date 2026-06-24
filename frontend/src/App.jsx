@@ -6,6 +6,7 @@ import CreateOfferPage from "./pages/CreateOfferPage.jsx";
 import OfferPage from "./pages/OfferPage.jsx";
 import OffersPage from "./pages/OffersPage.jsx";
 import HelpPage from "./pages/HelpPage.jsx";
+import LoginPage from "./pages/LoginPage.jsx";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
                 <Route path="help" element={<HelpPage />} />
             </Route>
             <Route path="register" element={<RegisterPage />} />
+            <Route path="login" element={<LoginPage />} />
         </Routes>
       </BrowserRouter>
   )
