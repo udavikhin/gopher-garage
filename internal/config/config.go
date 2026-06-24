@@ -8,6 +8,7 @@ type Config struct {
 	Server   *ServerConfig
 	Database *DatabaseConfig
 	Auth     *AuthConfig
+	CORS     *CORSConfig
 }
 
 func NewConfig() *Config {
@@ -15,6 +16,7 @@ func NewConfig() *Config {
 		Server:   NewServerConfig(),
 		Database: NewDatabaseConfig(),
 		Auth:     NewAuthConfig(),
+		CORS:     NewCORSConfig(),
 	}
 }
 

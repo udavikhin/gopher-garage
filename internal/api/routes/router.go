@@ -36,5 +36,7 @@ func NewRouter(handlers *handler.Handlers, cfg *config.Config) http.Handler {
 		http.StripPrefix("/auth", middleware.Chain(middleware.ContentJsonMiddleware)(auth)),
 	)
 
-	return middleware.Chain(middleware.LoggingMiddleware)(r)
+	CORSMiddleware := middleware.CORSMiddleware(cfg.CORS)
+
+	return middleware.Chain(middleware.LoggingMiddleware, CORSMiddleware)(r)
 }
