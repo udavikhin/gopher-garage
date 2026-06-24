@@ -5,16 +5,110 @@
 package repository
 
 import (
+	"database/sql/driver"
+	"fmt"
+
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type VehicleFuel string
+
+const (
+	VehicleFuelPetrol VehicleFuel = "petrol"
+	VehicleFuelDiesel VehicleFuel = "diesel"
+)
+
+func (e *VehicleFuel) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = VehicleFuel(s)
+	case string:
+		*e = VehicleFuel(s)
+	default:
+		return fmt.Errorf("unsupported scan type for VehicleFuel: %T", src)
+	}
+	return nil
+}
+
+type NullVehicleFuel struct {
+	VehicleFuel VehicleFuel `json:"vehicle_fuel"`
+	Valid       bool        `json:"valid"` // Valid is true if VehicleFuel is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullVehicleFuel) Scan(value interface{}) error {
+	if value == nil {
+		ns.VehicleFuel, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.VehicleFuel.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullVehicleFuel) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.VehicleFuel), nil
+}
+
+type VehicleGearbox string
+
+const (
+	VehicleGearboxAuto   VehicleGearbox = "auto"
+	VehicleGearboxManual VehicleGearbox = "manual"
+)
+
+func (e *VehicleGearbox) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = VehicleGearbox(s)
+	case string:
+		*e = VehicleGearbox(s)
+	default:
+		return fmt.Errorf("unsupported scan type for VehicleGearbox: %T", src)
+	}
+	return nil
+}
+
+type NullVehicleGearbox struct {
+	VehicleGearbox VehicleGearbox `json:"vehicle_gearbox"`
+	Valid          bool           `json:"valid"` // Valid is true if VehicleGearbox is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullVehicleGearbox) Scan(value interface{}) error {
+	if value == nil {
+		ns.VehicleGearbox, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.VehicleGearbox.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullVehicleGearbox) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.VehicleGearbox), nil
+}
+
 type Offer struct {
-	ID          int32            `json:"id"`
-	UserID      pgtype.Int4      `json:"user_id"`
-	Vehicle     pgtype.Text      `json:"vehicle"`
-	Description pgtype.Text      `json:"description"`
-	Price       pgtype.Float8    `json:"price"`
-	CreatedAt   pgtype.Timestamp `json:"created_at"`
+	ID          int32              `json:"id"`
+	UserID      pgtype.Int4        `json:"user_id"`
+	Make        pgtype.Text        `json:"make"`
+	Model       pgtype.Text        `json:"model"`
+	Gearbox     NullVehicleGearbox `json:"gearbox"`
+	Mileage     pgtype.Int4        `json:"mileage"`
+	Color       pgtype.Text        `json:"color"`
+	Fuel        NullVehicleFuel    `json:"fuel"`
+	Price       pgtype.Int4        `json:"price"`
+	Owners      pgtype.Int2        `json:"owners"`
+	Negotiable  pgtype.Bool        `json:"negotiable"`
+	Description pgtype.Text        `json:"description"`
+	CreatedAt   pgtype.Timestamp   `json:"created_at"`
 }
 
 type RefreshToken struct {
@@ -26,10 +120,9 @@ type RefreshToken struct {
 }
 
 type User struct {
-	ID         int32       `json:"id"`
-	Email      string      `json:"email"`
-	FirstName  pgtype.Text `json:"first_name"`
-	LastName   pgtype.Text `json:"last_name"`
-	Patronymic pgtype.Text `json:"patronymic"`
-	Password   string      `json:"password"`
+	ID          int32       `json:"id"`
+	Email       string      `json:"email"`
+	FullName    pgtype.Text `json:"full_name"`
+	Password    string      `json:"password"`
+	PhoneNumber pgtype.Text `json:"phone_number"`
 }

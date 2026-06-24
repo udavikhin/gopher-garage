@@ -12,22 +12,36 @@ import (
 )
 
 const addOffer = `-- name: AddOffer :one
-INSERT INTO offers (user_id, vehicle, description, price) VALUES ($1, $2, $3, $4) RETURNING id
+INSERT INTO offers (user_id, make, model, gearbox, mileage, color, fuel, price, negotiable, description)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+RETURNING id
 `
 
 type AddOfferParams struct {
-	UserID      pgtype.Int4   `json:"user_id"`
-	Vehicle     pgtype.Text   `json:"vehicle"`
-	Description pgtype.Text   `json:"description"`
-	Price       pgtype.Float8 `json:"price"`
+	UserID      pgtype.Int4        `json:"user_id"`
+	Make        pgtype.Text        `json:"make"`
+	Model       pgtype.Text        `json:"model"`
+	Gearbox     NullVehicleGearbox `json:"gearbox"`
+	Mileage     pgtype.Int4        `json:"mileage"`
+	Color       pgtype.Text        `json:"color"`
+	Fuel        NullVehicleFuel    `json:"fuel"`
+	Price       pgtype.Int4        `json:"price"`
+	Negotiable  pgtype.Bool        `json:"negotiable"`
+	Description pgtype.Text        `json:"description"`
 }
 
 func (q *Queries) AddOffer(ctx context.Context, arg AddOfferParams) (int32, error) {
 	row := q.db.QueryRow(ctx, addOffer,
 		arg.UserID,
-		arg.Vehicle,
-		arg.Description,
+		arg.Make,
+		arg.Model,
+		arg.Gearbox,
+		arg.Mileage,
+		arg.Color,
+		arg.Fuel,
 		arg.Price,
+		arg.Negotiable,
+		arg.Description,
 	)
 	var id int32
 	err := row.Scan(&id)
@@ -35,55 +49,50 @@ func (q *Queries) AddOffer(ctx context.Context, arg AddOfferParams) (int32, erro
 }
 
 const addRefreshToken = `-- name: AddRefreshToken :one
-INSERT INTO refresh_tokens (user_id, token_hash, expires_at, created_at) VALUES ($1, $2, $3, $4) RETURNING id
+INSERT INTO refresh_tokens (user_id, token_hash, expires_at) VALUES ($1, $2, $3) RETURNING id
 `
 
 type AddRefreshTokenParams struct {
 	UserID    pgtype.Int4      `json:"user_id"`
 	TokenHash string           `json:"token_hash"`
 	ExpiresAt pgtype.Timestamp `json:"expires_at"`
-	CreatedAt pgtype.Timestamp `json:"created_at"`
 }
 
 func (q *Queries) AddRefreshToken(ctx context.Context, arg AddRefreshTokenParams) (int32, error) {
-	row := q.db.QueryRow(ctx, addRefreshToken,
-		arg.UserID,
-		arg.TokenHash,
-		arg.ExpiresAt,
-		arg.CreatedAt,
-	)
+	row := q.db.QueryRow(ctx, addRefreshToken, arg.UserID, arg.TokenHash, arg.ExpiresAt)
 	var id int32
 	err := row.Scan(&id)
 	return id, err
 }
 
 const addUser = `-- name: AddUser :one
-INSERT INTO users (email, first_name, last_name, patronymic, password) VALUES ($1, $2, $3, $4, $5) RETURNING id
+INSERT INTO users (email, full_name, password) VALUES ($1, $2, $3) RETURNING id
 `
 
 type AddUserParams struct {
-	Email      string      `json:"email"`
-	FirstName  pgtype.Text `json:"first_name"`
-	LastName   pgtype.Text `json:"last_name"`
-	Patronymic pgtype.Text `json:"patronymic"`
-	Password   string      `json:"password"`
+	Email    string      `json:"email"`
+	FullName pgtype.Text `json:"full_name"`
+	Password string      `json:"password"`
 }
 
 func (q *Queries) AddUser(ctx context.Context, arg AddUserParams) (int32, error) {
-	row := q.db.QueryRow(ctx, addUser,
-		arg.Email,
-		arg.FirstName,
-		arg.LastName,
-		arg.Patronymic,
-		arg.Password,
-	)
+	row := q.db.QueryRow(ctx, addUser, arg.Email, arg.FullName, arg.Password)
 	var id int32
 	err := row.Scan(&id)
 	return id, err
 }
 
+const deleteRefreshTokenByHash = `-- name: DeleteRefreshTokenByHash :exec
+DELETE FROM refresh_tokens WHERE token_hash = $1
+`
+
+func (q *Queries) DeleteRefreshTokenByHash(ctx context.Context, tokenHash string) error {
+	_, err := q.db.Exec(ctx, deleteRefreshTokenByHash, tokenHash)
+	return err
+}
+
 const getAllOffers = `-- name: GetAllOffers :many
-SELECT id, user_id, vehicle, description, price, created_at FROM offers
+SELECT id, user_id, make, model, gearbox, mileage, color, fuel, price, owners, negotiable, description, created_at FROM offers
 `
 
 func (q *Queries) GetAllOffers(ctx context.Context) ([]Offer, error) {
@@ -98,9 +107,16 @@ func (q *Queries) GetAllOffers(ctx context.Context) ([]Offer, error) {
 		if err := rows.Scan(
 			&i.ID,
 			&i.UserID,
-			&i.Vehicle,
-			&i.Description,
+			&i.Make,
+			&i.Model,
+			&i.Gearbox,
+			&i.Mileage,
+			&i.Color,
+			&i.Fuel,
 			&i.Price,
+			&i.Owners,
+			&i.Negotiable,
+			&i.Description,
 			&i.CreatedAt,
 		); err != nil {
 			return nil, err
@@ -114,7 +130,7 @@ func (q *Queries) GetAllOffers(ctx context.Context) ([]Offer, error) {
 }
 
 const getOfferById = `-- name: GetOfferById :one
-SELECT id, user_id, vehicle, description, price, created_at FROM offers WHERE id = $1
+SELECT id, user_id, make, model, gearbox, mileage, color, fuel, price, owners, negotiable, description, created_at FROM offers WHERE id = $1
 `
 
 func (q *Queries) GetOfferById(ctx context.Context, id int32) (Offer, error) {
@@ -123,16 +139,40 @@ func (q *Queries) GetOfferById(ctx context.Context, id int32) (Offer, error) {
 	err := row.Scan(
 		&i.ID,
 		&i.UserID,
-		&i.Vehicle,
-		&i.Description,
+		&i.Make,
+		&i.Model,
+		&i.Gearbox,
+		&i.Mileage,
+		&i.Color,
+		&i.Fuel,
 		&i.Price,
+		&i.Owners,
+		&i.Negotiable,
+		&i.Description,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const getRefreshTokenByHash = `-- name: GetRefreshTokenByHash :one
+SELECT id, user_id, token_hash, expires_at, created_at FROM refresh_tokens WHERE token_hash = $1 AND expires_at > NOW()
+`
+
+func (q *Queries) GetRefreshTokenByHash(ctx context.Context, tokenHash string) (RefreshToken, error) {
+	row := q.db.QueryRow(ctx, getRefreshTokenByHash, tokenHash)
+	var i RefreshToken
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.TokenHash,
+		&i.ExpiresAt,
 		&i.CreatedAt,
 	)
 	return i, err
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, email, first_name, last_name, patronymic, password FROM users WHERE email = $1
+SELECT id, email, full_name, password, phone_number FROM users WHERE email = $1
 `
 
 func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
@@ -141,10 +181,9 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 	err := row.Scan(
 		&i.ID,
 		&i.Email,
-		&i.FirstName,
-		&i.LastName,
-		&i.Patronymic,
+		&i.FullName,
 		&i.Password,
+		&i.PhoneNumber,
 	)
 	return i, err
 }
