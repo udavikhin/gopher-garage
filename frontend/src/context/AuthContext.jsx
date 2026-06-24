@@ -5,13 +5,18 @@ const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
-    const [accessToken, setAccessToken] = useState(null);
+    const [accessToken, setAccessToken] = useState(() => {
+        const token = localStorage.getItem('access_token');
+        if (token) setAuthHeader(token);
+        return token;
+    });
 
     const login = async (email, password) => {
         await authClient.post('login', {email, password}).then((response) => {
             const token = response.data?.access_token;
             setAccessToken(token);
             setAuthHeader(token);
+            localStorage.setItem('access_token', token);
         }).catch((e) => {
             throw new Error(e?.response?.data ?? "Произошла ошибка при попытке входа")
         })

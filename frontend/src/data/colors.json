@@ -1,0 +1,22 @@
+{
+  "white": {"name": "Белый", "hex": "#FFFFFF"},
+  "black": {"name": "Черный", "hex": "#000000"},
+  "silver": {"name": "Серебристый", "hex": "#C0C0C0"},
+  "gray": {"name": "Серый", "hex": "#808080"},
+  "dark-gray": {"name": "Темно-серый", "hex": "#404040"},
+  "red": {"name": "Красный", "hex": "#FF0000"},
+  "blue": {"name": "Синий", "hex": "#0000FF"},
+  "dark-blue": {"name": "Темно-синий", "hex": "#000080"},
+  "light-blue": {"name": "Голубой", "hex": "#00BFFF"},
+  "green": {"name": "Зеленый", "hex": "#008000"},
+  "dark-green": {"name": "Темно-зеленый", "hex": "#006400"},
+  "yellow": {"name": "Желтый", "hex": "#FFFF00"},
+  "gold": {"name": "Золотистый", "hex": "#FFD700"},
+  "orange": {"name": "Оранжевый", "hex": "#FFA500"},
+  "beige": {"name": "Бежевый", "hex": "#F5F5DC"},
+  "brown": {"name": "Коричневый", "hex": "#8B4513"},
+  "maroon": {"name": "Бордовый", "hex": "#800000"},
+  "purple": {"name": "Фиолетовый", "hex": "#800080"},
+  "cherry": {"name": "Вишневый", "hex": "#8B0000"},
+  "bronze": {"name": "Бронзовый", "hex": "#CD7F32"}
+}

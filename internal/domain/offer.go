@@ -7,6 +7,6 @@ type Offer struct {
 	User        string    `json:"user,omitempty"`
 	Vehicle     string    `json:"vehicle,omitempty"`
 	Description string    `json:"description,omitempty"`
-	Price       float64   `json:"price,omitempty"`
+	Price       int       `json:"price,omitempty"`
 	CreatedAt   time.Time `json:"created_at"`
 }

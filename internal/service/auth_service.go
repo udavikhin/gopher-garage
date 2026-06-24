@@ -36,7 +36,7 @@ type TokenPair struct {
 }
 
 func (a *AuthService) Login(ctx context.Context, email string, password string) (*TokenPair, error) {
-	credentialsError := errors.New("invalid login or password")
+	credentialsError := errors.New("Некорректный логин или пароль")
 
 	user, err := a.repo.GetUserByEmail(ctx, email)
 	if err != nil {

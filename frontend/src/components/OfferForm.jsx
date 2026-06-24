@@ -1,7 +1,8 @@
 import {useState} from "react";
 import {Link, useNavigate} from "react-router-dom";
 import {createOffer} from "../api/offers.js";
-import cars from "../data/cars.json";
+import carsJSON from "../data/cars.json";
+import colorsJSON from "../data/colors.json";
 
 function OfferForm() {
     const navigate = useNavigate();
@@ -12,15 +13,18 @@ function OfferForm() {
         year: null,
         gearbox: 'auto',
         mileage: null,
-        color: null,
+        color: '',
         fuel: 'petrol',
         description: '',
         price: null,
+        owners: null,
         negotiable: false
     })
 
-    const makes = Object.keys(cars.brands);
-    const models = formData.make ? cars.brands[formData.make] : [];
+    const makes = Object.keys(carsJSON.brands);
+    const models = formData.make ? carsJSON.brands[formData.make] : [];
+
+    const colors = Object.entries(colorsJSON);
 
     const handleChange = (e) => {
         const {name, value, type, checked} = e.target;
@@ -36,7 +40,7 @@ function OfferForm() {
         e.preventDefault();
         try {
             const id = await createOffer(formData);
-            navigate("/offers/{id}");
+            navigate(`/offers/${id}`);
         } catch (e) {
             setError(e.message)
         }
@@ -72,6 +76,16 @@ function OfferForm() {
                         className="input" type="number" name="year" min="1900" max={(new Date()).getFullYear()} value={formData.year ?? ''} onChange={handleChange} required/></label>
                     <label className="field"><span className="field__label">Пробег, км</span><input
                         className="input" type="number" min="0" max="999999" name="mileage" value={formData.mileage ?? ''} onChange={handleChange} required/></label>
+                    <label className="field"><span className="field__label">Цвет</span>
+                        <select name="color" className="select" value={formData.color} onChange={handleChange} required>
+                            <option value="" disabled>Выберите цвет</option>
+                            {colors.map(([slug, color]) => (
+                                <option key={slug} value={slug}>{color.name}</option>
+                            ))}
+                        </select>
+                    </label>
+                    <label className="field"><span className="field__label">Владельцев по ПТС</span><input
+                        className="input" type="number" min="1" max="100" name="owners" value={formData.owners ?? ''} onChange={handleChange} required/></label>
                     <div className="field"><span className="field__label">Коробка передач</span>
                         <div style={{display: "flex", gap: "24px", paddingTop: "6px"}}>
                             <label className="radio"><input type="radio" name="gearbox" value="auto" checked={formData.gearbox === 'auto'} onChange={handleChange} /><span
@@ -99,9 +113,6 @@ function OfferForm() {
                     <span className="sub">До 20 фото, формат JPG/PNG, до 10 МБ каждая</span>
                 </div>
                 <div className="post-form__thumbs">
-                    <div className="post-form__thumb"><span className="x">×</span></div>
-                    <div className="post-form__thumb"><span className="x">×</span></div>
-                    <div className="post-form__thumb"><span className="x">×</span></div>
                     <div className="post-form__thumb"><span className="x">×</span></div>
                     <div className="post-form__thumb post-form__thumb--add">+</div>
                 </div>
@@ -144,6 +155,7 @@ function OfferForm() {
                         <use href="/assets/icons/sprite.svg#i-arrow-right"/>
                     </svg></button>
                 </div>
+                { error && <p className="auth__error">{error}</p>}
             </footer>
         </form>
     )
