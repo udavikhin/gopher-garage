@@ -51,7 +51,7 @@ const RegisterPage = () => {
 
                         <button className="btn btn--primary btn--block btn--lg" type="submit">Создать аккаунт</button>
 
-                        <p className="auth__signin">Уже есть аккаунт? <a href="#">Войти</a></p>
+                        <p className="auth__signin">Уже есть аккаунт? <Link to="/login">Войти</Link></p>
                     </form>
                 </div>
             </section>

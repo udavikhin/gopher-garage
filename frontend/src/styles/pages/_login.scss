@@ -7,38 +7,6 @@
   .auth__form-side  { order: 1; }
 }
 
-.auth__socials {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: $space-3;
-}
-
-.btn--social {
-  background: $bg-surface;
-  color: $font-primary;
-  border-color: $border-default;
-  padding: 12px 14px;
-
-  &:hover { background: $bg-muted; }
-}
-
-.auth__divider {
-  display: flex;
-  align-items: center;
-  gap: $space-3;
-  color: $font-tertiary;
-  font-size: 12px;
-  font-weight: 500;
-
-  &::before,
-  &::after {
-    content: "";
-    flex: 1;
-    height: 1px;
-    background: $border-default;
-  }
-}
-
 .auth__helpers {
   display: flex;
   align-items: center;
