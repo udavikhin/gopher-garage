@@ -18,7 +18,7 @@ const OffersPage = () => {
                 <button className="input-group" style={{width: 'auto', cursor: 'pointer'}}>
                     <span>Сначала новые</span>
                     <svg className="icon">
-                        <use href="assets/icons/sprite.svg#i-caret-down"/>
+                        <use href="/assets/icons/sprite.svg#i-caret-down"/>
                     </svg>
                 </button>
             </div>
@@ -172,7 +172,7 @@ const OffersPage = () => {
                 <nav className="pagination">
                     <button className="pagination__btn">
                         <svg className="icon">
-                            <use href="assets/icons/sprite.svg#i-caret-left"/>
+                            <use href="/assets/icons/sprite.svg#i-caret-left"/>
                         </svg>
                     </button>
                     <button className="pagination__btn pagination__btn--active">1</button>

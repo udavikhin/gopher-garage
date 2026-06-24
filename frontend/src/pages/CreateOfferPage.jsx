@@ -62,7 +62,7 @@ const CreateOfferPage = () => {
                     <h2 className="h-display-s">Фотографии</h2>
                     <div className="post-form__upload">
                         <svg className="icon">
-                            <use href="assets/icons/sprite.svg#i-cloud-upload"/>
+                            <use href="/assets/icons/sprite.svg#i-cloud-upload"/>
                         </svg>
                         <span className="lead">Перетащите фото или нажмите для выбора</span>
                         <span className="sub">До 20 фото, формат JPG/PNG, до 10 МБ каждая</span>
@@ -98,7 +98,7 @@ const CreateOfferPage = () => {
                     <div className="right">
                         <button className="btn btn--secondary" disabled>Назад</button>
                         <button className="btn btn--primary">Дальше <svg className="icon">
-                            <use href="assets/icons/sprite.svg#i-arrow-right"/>
+                            <use href="/assets/icons/sprite.svg#i-arrow-right"/>
                         </svg></button>
                     </div>
                 </footer>

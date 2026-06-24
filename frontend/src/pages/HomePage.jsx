@@ -29,7 +29,7 @@ const HomePage = () => {
                             <input className="input" type="text" placeholder="Год от" value="2015"/>
                             <button className="btn btn--primary btn--lg" type="submit">
                                 <svg className="icon">
-                                    <use href="assets/icons/sprite.svg#i-magnifier"/>
+                                    <use href="/assets/icons/sprite.svg#i-magnifier"/>
                                 </svg>
                                 Найти
                             </button>
@@ -37,7 +37,7 @@ const HomePage = () => {
 
                         <span className="hero__counter">
           <svg className="icon" style={{width:"14px", height: "14px", color: "var(--brand-primary)"}}><use
-              href="assets/icons/sprite.svg#i-check"/></svg>
+              href="/assets/icons/sprite.svg#i-check"/></svg>
           152 348 объявлений с актуальными ценами
         </span>
                     </form>
@@ -48,7 +48,7 @@ const HomePage = () => {
                     <div className="section__head">
                         <h2 className="h-display-s">Свежие объявления</h2>
                         <a className="section__link" href="listings.html">Смотреть все <svg className="icon">
-                            <use href="assets/icons/sprite.svg#i-arrow-right"/>
+                            <use href="/assets/icons/sprite.svg#i-arrow-right"/>
                         </svg></a>
                     </div>
 
@@ -61,7 +61,7 @@ const HomePage = () => {
                                 <span className="listing-card__title">Toyota Camry 2.5 AT, 2019</span>
                                 <span className="listing-card__meta">68 400 км · Автомат · Бензин</span>
                                 <span className="listing-card__location"><svg className="icon"><use
-                                    href="assets/icons/sprite.svg#i-map-pin"/></svg> Москва · 3 часа назад</span>
+                                    href="/assets/icons/sprite.svg#i-map-pin"/></svg> Москва · 3 часа назад</span>
                             </div>
                         </a>
                         <a className="listing-card" href="listing.html">
@@ -72,7 +72,7 @@ const HomePage = () => {
                                 <span className="listing-card__title">Kia Sportage 2.0 AT, 2020</span>
                                 <span className="listing-card__meta">45 200 км · Автомат · Бензин</span>
                                 <span className="listing-card__location"><svg className="icon"><use
-                                    href="assets/icons/sprite.svg#i-map-pin"/></svg> Санкт-Петербург · вчера</span>
+                                    href="/assets/icons/sprite.svg#i-map-pin"/></svg> Санкт-Петербург · вчера</span>
                             </div>
                         </a>
                         <a className="listing-card" href="listing.html">
@@ -83,7 +83,7 @@ const HomePage = () => {
                                 <span className="listing-card__title">Lada Vesta SW Cross, 2022</span>
                                 <span className="listing-card__meta">21 800 км · Механика · Бензин</span>
                                 <span className="listing-card__location"><svg className="icon"><use
-                                    href="assets/icons/sprite.svg#i-map-pin"/></svg> Казань · 2 дня назад</span>
+                                    href="/assets/icons/sprite.svg#i-map-pin"/></svg> Казань · 2 дня назад</span>
                             </div>
                         </a>
                         <a className="listing-card" href="listing.html">
@@ -94,7 +94,7 @@ const HomePage = () => {
                                 <span className="listing-card__title">Mercedes-Benz E 200, 2018</span>
                                 <span className="listing-card__meta">94 100 км · Автомат · Бензин</span>
                                 <span className="listing-card__location"><svg className="icon"><use
-                                    href="assets/icons/sprite.svg#i-map-pin"/></svg> Екатеринбург · сегодня</span>
+                                    href="/assets/icons/sprite.svg#i-map-pin"/></svg> Екатеринбург · сегодня</span>
                             </div>
                         </a>
                     </div>

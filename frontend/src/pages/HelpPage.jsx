@@ -6,7 +6,7 @@ const HelpPage = () => {
                 <p className="help__sub">Найдите ответ или напишите нам</p>
                 <label className="help__search">
                     <svg className="icon" style={{width:"18px", height: "18px", color: "var(--font-tertiary)"}}>
-                        <use href="assets/icons/sprite.svg#i-magnifier"/>
+                        <use href="/assets/icons/sprite.svg#i-magnifier"/>
                     </svg>
                     <input type="search" placeholder="Например, «как разместить объявление»"/>
                     <button className="btn btn--primary btn--sm">Найти</button>
@@ -17,12 +17,12 @@ const HelpPage = () => {
                 <h2>Популярные разделы</h2>
                 <div className="help__topics">
                     <a className="help__topic" href="#">
-                        <span className="icon-tile"><svg className="icon"><use href="assets/icons/sprite.svg#i-magnifier"/></svg></span>
+                        <span className="icon-tile"><svg className="icon"><use href="/assets/icons/sprite.svg#i-magnifier"/></svg></span>
                         <h3>Для покупателей</h3>
                         <p>Как искать машину, сравнивать варианты и связываться с продавцом.</p>
                     </a>
                     <a className="help__topic" href="#">
-                        <span className="icon-tile"><svg className="icon"><use href="assets/icons/sprite.svg#i-plus"/></svg></span>
+                        <span className="icon-tile"><svg className="icon"><use href="/assets/icons/sprite.svg#i-plus"/></svg></span>
                         <h3>Для продавцов</h3>
                         <p>Как разместить объявление, добавить фото и поднять в выдаче.</p>
                     </a>

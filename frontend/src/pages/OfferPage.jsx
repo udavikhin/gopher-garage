@@ -4,19 +4,19 @@ const OfferPage = () => {
             <nav className="breadcrumbs">
                 <a href="index.html">Главная</a>
                 <svg className="breadcrumbs__sep">
-                    <use href="assets/icons/sprite.svg#i-caret-right"/>
+                    <use href="/assets/icons/sprite.svg#i-caret-right"/>
                 </svg>
                 <a href="listings.html">Купить</a>
                 <svg className="breadcrumbs__sep">
-                    <use href="assets/icons/sprite.svg#i-caret-right"/>
+                    <use href="/assets/icons/sprite.svg#i-caret-right"/>
                 </svg>
                 <a href="listings.html">BMW</a>
                 <svg className="breadcrumbs__sep">
-                    <use href="assets/icons/sprite.svg#i-caret-right"/>
+                    <use href="/assets/icons/sprite.svg#i-caret-right"/>
                 </svg>
                 <a href="listings.html">3 серия</a>
                 <svg className="breadcrumbs__sep">
-                    <use href="assets/icons/sprite.svg#i-caret-right"/>
+                    <use href="/assets/icons/sprite.svg#i-caret-right"/>
                 </svg>
                 <span className="breadcrumbs__item--current">BMW 320i 2021</span>
             </nav>
@@ -29,7 +29,7 @@ const OfferPage = () => {
                         <span>42 800 км</span><span className="dot"></span>
                         <span>Автомат</span><span className="dot"></span>
                         <span><svg className="icon" style={{width: '14px', height: '14px'}}><use
-                            href="assets/icons/sprite.svg#i-map-pin"/></svg> Москва, Хамовники</span><span
+                            href="/assets/icons/sprite.svg#i-map-pin"/></svg> Москва, Хамовники</span><span
                         className="dot"></span>
                         <span className="t-muted">№ 47218394</span>
                     </div>
@@ -37,13 +37,13 @@ const OfferPage = () => {
                 <div className="listing__actions">
                     <button className="btn btn--secondary">
                         <svg className="icon">
-                            <use href="assets/icons/sprite.svg#i-share"/>
+                            <use href="/assets/icons/sprite.svg#i-share"/>
                         </svg>
                         Поделиться
                     </button>
                     <button className="btn btn--secondary">
                         <svg className="icon">
-                            <use href="assets/icons/sprite.svg#i-heart"/>
+                            <use href="/assets/icons/sprite.svg#i-heart"/>
                         </svg>
                         В избранное
                     </button>
@@ -83,13 +83,13 @@ const OfferPage = () => {
                     </div>
                     <button className="btn btn--primary btn--block btn--lg">
                         <svg className="icon">
-                            <use href="assets/icons/sprite.svg#i-phone"/>
+                            <use href="/assets/icons/sprite.svg#i-phone"/>
                         </svg>
                         +7 (925) 412-••-•• &nbsp;<span style={{opacity: '.8', fontWeight: '500'}}>Показать</span>
                     </button>
                     <a className="btn btn--secondary btn--block" href="chat.html">
                         <svg className="icon">
-                            <use href="assets/icons/sprite.svg#i-chat"/>
+                            <use href="/assets/icons/sprite.svg#i-chat"/>
                         </svg>
                         Написать сообщение
                     </a>
@@ -147,7 +147,7 @@ const OfferPage = () => {
                     <span className="seller-card__name">Игорь Кравцов</span>
                     <div className="seller-card__meta">
                         <span><svg className="icon" style={{width: '14px', height: '14px', color: '#f59e0b'}}><use
-                            href="assets/icons/sprite.svg#i-star-fill"/></svg> 4.9 <span
+                            href="/assets/icons/sprite.svg#i-star-fill"/></svg> 4.9 <span
                             className="t-muted">(23 отзыва)</span></span>
                         <span className="dot"
                               style={{width: '3px', height: '3px', background: 'var(--font-tertiary)', borderRadius: '50%'}}></span>
@@ -170,7 +170,7 @@ const OfferPage = () => {
                         <p className="t-caption">BMW 3 серия с похожими параметрами</p>
                     </div>
                     <a className="section__link" href="listings.html">Смотреть все <svg className="icon">
-                        <use href="assets/icons/sprite.svg#i-arrow-right"/>
+                        <use href="/assets/icons/sprite.svg#i-arrow-right"/>
                     </svg></a>
                 </div>
                 <div className="similar__grid">

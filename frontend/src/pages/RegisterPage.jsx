@@ -6,7 +6,7 @@ const RegisterPage = () => {
             <section className="auth__form-side">
                 <Link to="/" className="brand">
                     <span className="brand__mark"><svg className="icon"><use
-                        href="assets/icons/sprite.svg#i-car"/></svg></span>
+                        href="/assets/icons/sprite.svg#i-car"/></svg></span>
                     <span className="brand__wordmark">Gopher Garage</span>
                 </Link>
 
@@ -38,7 +38,7 @@ const RegisterPage = () => {
                             <div className="input-group">
                                 <input type="password" defaultValue="••••••••••"/>
                                 <svg className="icon" style={{color: "var(--font-tertiary)", width: "18px", height: "18px"}}>
-                                    <use href="assets/icons/sprite.svg#i-eye"/>
+                                    <use href="/assets/icons/sprite.svg#i-eye"/>
                                 </svg>
                             </div>
                         </label>

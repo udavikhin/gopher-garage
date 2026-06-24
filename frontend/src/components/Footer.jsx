@@ -4,7 +4,7 @@ const Footer = () => {
             <div className="site-footer__inner">
                 <a className="brand brand--sm brand--inverse" href="index.html">
                     <span className="brand__mark"><svg className="icon"><use
-                        href="assets/icons/sprite.svg#i-car"/></svg></span>
+                        href="/assets/icons/sprite.svg#i-car"/></svg></span>
                     <span className="brand__wordmark">Gopher Garage</span>
                 </a>
                 <span

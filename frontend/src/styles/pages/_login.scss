@@ -1,0 +1,74 @@
+@use "sass:color";
+@use "../abstracts/variables" as *;
+@use "../abstracts/mixins" as *;
+
+.auth--reverse {
+  .auth__brand-side { order: 0; }
+  .auth__form-side  { order: 1; }
+}
+
+.auth__socials {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $space-3;
+}
+
+.btn--social {
+  background: $bg-surface;
+  color: $font-primary;
+  border-color: $border-default;
+  padding: 12px 14px;
+
+  &:hover { background: $bg-muted; }
+}
+
+.auth__divider {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  color: $font-tertiary;
+  font-size: 12px;
+  font-weight: 500;
+
+  &::before,
+  &::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: $border-default;
+  }
+}
+
+.auth__helpers {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-3;
+}
+
+.auth__forgot {
+  font-size: 13px;
+  font-weight: 600;
+  color: $brand-primary;
+}
+
+.auth__testimonial {
+  margin: 0;
+  padding: $space-6;
+  border-radius: $radius-lg;
+  background: color.adjust($brand-primary-dark, $lightness: 6%);
+  color: $font-inverse;
+
+  blockquote {
+    margin: 0;
+    font-size: 15px;
+    font-style: italic;
+    line-height: 1.5;
+  }
+
+  figcaption {
+    margin-top: $space-2;
+    font-size: 12px;
+    color: #bae6fd;
+  }
+}
