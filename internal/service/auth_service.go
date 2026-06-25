@@ -118,6 +118,12 @@ func (a *AuthService) GetRefreshTokenTTL() time.Duration {
 }
 
 func (a *AuthService) RefreshTokenCookie(refreshToken string) *http.Cookie {
+	maxAge := -1
+
+	if refreshToken != "" {
+		maxAge = int(a.GetRefreshTokenTTL().Seconds())
+	}
+
 	return &http.Cookie{
 		Name:     "refresh_token",
 		Value:    refreshToken,
@@ -125,7 +131,7 @@ func (a *AuthService) RefreshTokenCookie(refreshToken string) *http.Cookie {
 		Secure:   true,
 		SameSite: http.SameSiteLaxMode,
 		Path:     "/auth/",
-		MaxAge:   int(a.GetRefreshTokenTTL().Seconds()),
+		MaxAge:   maxAge,
 	}
 }
 
@@ -209,4 +215,11 @@ func (a *AuthService) Refresh(ctx context.Context, refreshToken string) (*TokenP
 	}
 
 	return tokens, nil
+}
+
+func (a *AuthService) Logout(ctx context.Context, refreshToken string) error {
+	tokenHash := sha256.Sum256([]byte(refreshToken))
+	tokenHashEncoded := hex.EncodeToString(tokenHash[:])
+
+	return a.repo.DeleteRefreshTokenByHash(ctx, tokenHashEncoded)
 }

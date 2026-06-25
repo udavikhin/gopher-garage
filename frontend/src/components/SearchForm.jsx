@@ -52,7 +52,7 @@ const SearchForm = () => {
             <span className="hero__counter">
                 <svg className="icon" style={{width: "14px", height: "14px", color: "var(--brand-primary)"}}><use
                     href="/assets/icons/sprite.svg#i-check"/></svg>
-                152 348 объявлений с актуальными ценами
+                Ищите по всей базе объявлений
             </span>
         </form>
     );

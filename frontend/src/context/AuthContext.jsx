@@ -71,8 +71,20 @@ export const AuthProvider = ({ children }) => {
         })
     }
 
+    const logout = async () => {
+        try {
+            await authClient.post('logout');
+        } finally {
+            setAccessToken(null);
+            setUser(null);
+            setAuthHeader(null);
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('full_name');
+        }
+    }
+
     return (
-        <AuthContext.Provider value={{ user, accessToken, login, register, isAuthenticated: !!accessToken }}>
+        <AuthContext.Provider value={{ user, accessToken, login, logout, register, isAuthenticated: !!accessToken }}>
             {children}
         </AuthContext.Provider>
     )

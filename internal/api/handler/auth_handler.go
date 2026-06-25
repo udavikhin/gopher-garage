@@ -46,7 +46,20 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {}
+func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
+	cookie, err := r.Cookie("refresh_token")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
+	}
+
+	if err := h.services.Auth.Logout(r.Context(), cookie.Value); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	http.SetCookie(w, h.services.Auth.RefreshTokenCookie(""))
+}
 
 func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	var data auth.RegisterUserRequest

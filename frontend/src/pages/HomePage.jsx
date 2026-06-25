@@ -24,7 +24,7 @@ const HomePage = () => {
             <section className="hero">
                 <div className="hero__inner">
                     <h1 className="hero__title">Найдите свою новую машину</h1>
-                    <p className="hero__sub">152 348 объявлений по всей России</p>
+                    <p className="hero__sub">Объявления о продаже автомобилей со всей России</p>
 
                     <SearchForm />
                 </div>
