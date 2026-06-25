@@ -1,48 +1,47 @@
-import {useAuth} from "../context/AuthContext.jsx";
 import {useNavigate} from "react-router-dom";
 import {useFormData} from "../hooks/useFormData.js";
-import {useState} from "react";
+import carsJSON from "../data/cars.json";
 
 const SearchForm = () => {
-    const {login} = useAuth()
     const navigate = useNavigate();
+    const makes = Object.keys(carsJSON.brands);
 
-    const { formData, handleChange } = useFormData({
+    const {formData, handleChange} = useFormData({
         make: '',
         model: '',
-        price_from: null,
-        price_to: null,
-        year_from: null
-    })
+        price_min: null,
+        price_max: null,
+        year_min: null,
+    });
 
-    const [error, setError] = useState(null)
+    const models = formData.make ? carsJSON.brands[formData.make] : [];
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-        try {
-            await (formData.email, formData.password);
-            navigate("/");
-        } catch (e) {
-            setError(e.message)
-        }
-    }
+        const params = new URLSearchParams(
+            Object.entries(formData).filter(([, v]) => v).map((k, v) => [k, String(v)])
+        );
+        navigate(`/offers?${params.toString()}`);
+    };
 
     return (
-        <form className="hero__search">
+        <form className="hero__search" onSubmit={handleSubmit}>
             <div className="hero__fields">
-                <select className="select">
-                    <option>Марка</option>
-                    <option>BMW</option>
-                    <option>Toyota</option>
+                <select name="make" className="select" value={formData.make} onChange={handleChange}>
+                    <option value="">Марка</option>
+                    {makes.map(make => (
+                        <option key={make} value={make}>{make}</option>
+                    ))}
                 </select>
-                <select className="select">
-                    <option>Модель</option>
-                    <option>3 серия</option>
-                    <option>X5</option>
+                <select name="model" className="select" value={formData.model} onChange={handleChange}>
+                    <option value="">Модель</option>
+                    {models.map(model => (
+                        <option key={model} value={model}>{model}</option>
+                    ))}
                 </select>
-                <input className="input" type="text" placeholder="Цена от" value="500 000"/>
-                <input className="input" type="text" placeholder="Цена до" value="5 000 000"/>
-                <input className="input" type="text" placeholder="Год от" value="2015"/>
+                <input className="input" type="number" name="price_min" value={formData.price_min ?? ''} placeholder="Цена от" onChange={handleChange}/>
+                <input className="input" type="number" name="price_max" value={formData.price_max ?? ''} placeholder="Цена до" onChange={handleChange}/>
+                <input className="input" type="number" name="year_min" value={formData.year_min ?? ''} placeholder="Год от" onChange={handleChange}/>
                 <button className="btn btn--primary btn--lg" type="submit">
                     <svg className="icon">
                         <use href="/assets/icons/sprite.svg#i-magnifier"/>
@@ -50,14 +49,13 @@ const SearchForm = () => {
                     Найти
                 </button>
             </div>
-
             <span className="hero__counter">
-          <svg className="icon" style={{width:"14px", height: "14px", color: "var(--brand-primary)"}}><use
-              href="/assets/icons/sprite.svg#i-check"/></svg>
-          152 348 объявлений с актуальными ценами
-        </span>
+                <svg className="icon" style={{width: "14px", height: "14px", color: "var(--brand-primary)"}}><use
+                    href="/assets/icons/sprite.svg#i-check"/></svg>
+                152 348 объявлений с актуальными ценами
+            </span>
         </form>
-    )
-}
+    );
+};
 
 export default SearchForm;

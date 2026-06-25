@@ -116,7 +116,7 @@ const OfferForm = () => {
                     <svg className="icon">
                         <use href="/assets/icons/sprite.svg#i-cloud-upload"/>
                     </svg>
-                    <span className="lead">Перетащите фото или нажмите для выбора</span>
+                    <span className="lead">Нажмите для выбора</span>
                     <span className="sub">До 20 фото, формат JPG/PNG, до 10 МБ каждая</span>
                 </div>
                 <input

@@ -199,7 +199,7 @@ func (h *OfferHandler) ListOffers(w http.ResponseWriter, r *http.Request) {
 
 	offers, total, err := h.services.Offer.SearchOffers(r.Context(), filter)
 	if err != nil {
-		http.Error(w, err, http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		log.Println(err)
 		return
 	}

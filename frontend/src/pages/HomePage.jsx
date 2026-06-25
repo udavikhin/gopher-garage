@@ -10,7 +10,7 @@ const HomePage = () => {
     useEffect(() => {
         getOffers()
             .then(response => {
-                setOffers(response.data)
+                setOffers(response.data.offers ?? [])
             })
             .catch((e) => {
                 console.log(e)
@@ -40,7 +40,7 @@ const HomePage = () => {
 
                     <div className="listings-grid">
                         {offers.map((offer) => (
-                            <OfferCard offer={offer} />
+                            <OfferCard key={offer.id} offer={offer} />
                         ))}
                     </div>
                 </div>

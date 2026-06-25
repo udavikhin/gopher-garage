@@ -2,20 +2,29 @@ import {useEffect, useState} from "react";
 import {getOffers} from "../api/offers.js";
 import OfferCard from "../components/OfferCard.jsx";
 import OfferFilterForm from "../components/OfferFilterForm.jsx";
+import {useSearchParams} from "react-router-dom";
 
 const OffersPage = () => {
     const [offers, setOffers] = useState(null);
 
-    const PER_PAGE = 10;
+    const [searchParams] = useSearchParams();
+
+    const PER_PAGE = 6;
     const [page, setPage] = useState(1);
     const [total, setTotal] = useState(0);
-    const [filter, setFilter] = useState({});
+    const [filter, setFilter] = useState({
+        make:      searchParams.get('make') ?? '',
+        model:     searchParams.get('model') ?? '',
+        price_min: Number(searchParams.get('price_min')) ?? null,
+        price_max: Number(searchParams.get('price_max')) ?? null,
+        year_min:  Number(searchParams.get('year_min')) ?? null,
+    });
     const totalPages = Math.ceil(total / PER_PAGE);
 
     useEffect(() => {
         getOffers({...filter, page, per_page: PER_PAGE})
             .then(response => {
-                setOffers(response.data.offers);
+                setOffers(response.data.offers ?? []);
                 setTotal(response.data.total);
             })
             .catch((e) => {
@@ -44,15 +53,15 @@ const OffersPage = () => {
                 <OfferFilterForm onSubmit={(f) => {setFilter(f); setPage(1);}} />
                 <div className="grid-3">
                     {offers.map((offer) => (
-                        <OfferCard offer={offer} />
+                        <OfferCard key={offer.id} offer={offer} />
                     ))}
                 </div>
             </div>
 
             <div className="listings__pagination">
                 <nav className="pagination">
-                    { page > 1 && <button className="pagination__btn">
-                        <svg className="icon">
+                    { page > 1 && <button className="pagination__btn" onClick={() => setPage(page - 1)}>
+                        <svg className="icon" >
                             <use href="/assets/icons/sprite.svg#i-caret-left"/>
                         </svg>
                     </button>}
@@ -64,7 +73,7 @@ const OffersPage = () => {
                             onClick={() => setPage(i + 1)}
                         >{i + 1}</button>
                     ))}
-                    { page < totalPages && <button className="pagination__btn">
+                    { page < totalPages && <button className="pagination__btn" onClick={() => setPage(page + 1)}>
                         <svg className="icon">
                             <use href="/assets/icons/sprite.svg#i-caret-right"/>
                         </svg>
