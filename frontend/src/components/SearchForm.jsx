@@ -19,7 +19,7 @@ const SearchForm = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         const params = new URLSearchParams(
-            Object.entries(formData).filter(([, v]) => v).map((k, v) => [k, String(v)])
+            Object.entries(formData).filter(([, v]) => v).map(([k, v]) => [k, String(v)])
         );
         navigate(`/offers?${params.toString()}`);
     };

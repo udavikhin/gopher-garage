@@ -5,3 +5,9 @@ export const getInitials = (fullName) => {
     const initials = words.map(word => word.charAt(0).toUpperCase());
     return initials.join('');
 }
+
+export const cleanObject = (obj) => {
+    return Object.fromEntries(
+        Object.entries(obj).filter(([, v]) => v !== '' && v !== null && v !== undefined && v !== 0)
+    );
+}

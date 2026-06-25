@@ -50,7 +50,7 @@ const OffersPage = () => {
             </div>
 
             <div className="listings__body">
-                <OfferFilterForm onSubmit={(f) => {setFilter(f); setPage(1);}} />
+                <OfferFilterForm onSubmit={(f) => {setFilter(f); setPage(1);}} initialData={filter} />
                 <div className="grid-3">
                     {offers.map((offer) => (
                         <OfferCard key={offer.id} offer={offer} />

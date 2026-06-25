@@ -1,17 +1,17 @@
 import {useFormData} from "../hooks/useFormData.js";
 import cars from "../data/cars.json";
 
-const OfferFilterForm = ({ onSubmit }) => {
+const OfferFilterForm = ({ onSubmit, initialData = {} }) => {
     const makes = Object.keys(cars.brands);
 
     const { formData, resetForm, handleChange } = useFormData({
-        make: '',
-        model: '',
-        price_min: null,
-        price_max: null,
-        year_min: null,
-        year_max: null,
-        gearbox: ''
+        make: initialData.make ?? '',
+        model: initialData.model ?? '',
+        price_min: initialData.price_min ?? null,
+        price_max: initialData.price_max ?? null,
+        year_min: initialData.year_min ?? null,
+        year_max: initialData.year_max ?? null,
+        gearbox: initialData.gearbox ?? ''
     });
 
     const models = formData.make ? cars.brands[formData.make] : [];
