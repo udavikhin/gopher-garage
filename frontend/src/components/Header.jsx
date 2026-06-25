@@ -19,15 +19,6 @@ const Header = () => {
                     </nav>
                 </div>
                 <div className="site-header__right">
-                    <button className="site-header__city">
-                        <svg className="icon">
-                            <use href="/assets/icons/sprite.svg#i-map-pin"/>
-                        </svg>
-                        Москва
-                        <svg className="icon">
-                            <use href="/assets/icons/sprite.svg#i-caret-down"/>
-                        </svg>
-                    </button>
                     {isAuthenticated ?
                         (<>
                             <Link className="btn btn--primary" to="/offers/create">

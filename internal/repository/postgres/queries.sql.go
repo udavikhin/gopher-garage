@@ -12,8 +12,8 @@ import (
 )
 
 const addOffer = `-- name: AddOffer :one
-INSERT INTO offers (user_id, make, model, gearbox, mileage, color, fuel, price, negotiable, description)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+INSERT INTO offers (user_id, make, model, year, gearbox, mileage, color, fuel, price, negotiable, description)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
 RETURNING id
 `
 
@@ -21,6 +21,7 @@ type AddOfferParams struct {
 	UserID      pgtype.Int4        `json:"user_id"`
 	Make        pgtype.Text        `json:"make"`
 	Model       pgtype.Text        `json:"model"`
+	Year        pgtype.Int2        `json:"year"`
 	Gearbox     NullVehicleGearbox `json:"gearbox"`
 	Mileage     pgtype.Int4        `json:"mileage"`
 	Color       pgtype.Text        `json:"color"`
@@ -35,6 +36,7 @@ func (q *Queries) AddOffer(ctx context.Context, arg AddOfferParams) (int32, erro
 		arg.UserID,
 		arg.Make,
 		arg.Model,
+		arg.Year,
 		arg.Gearbox,
 		arg.Mileage,
 		arg.Color,
@@ -98,7 +100,7 @@ func (q *Queries) DeleteRefreshTokenByHash(ctx context.Context, tokenHash string
 }
 
 const getAllOffers = `-- name: GetAllOffers :many
-SELECT id, user_id, make, model, gearbox, mileage, color, fuel, price, owners, negotiable, description, created_at FROM offers
+SELECT id, user_id, make, model, year, gearbox, mileage, color, fuel, price, owners, negotiable, description, created_at FROM offers
 `
 
 func (q *Queries) GetAllOffers(ctx context.Context) ([]Offer, error) {
@@ -115,6 +117,7 @@ func (q *Queries) GetAllOffers(ctx context.Context) ([]Offer, error) {
 			&i.UserID,
 			&i.Make,
 			&i.Model,
+			&i.Year,
 			&i.Gearbox,
 			&i.Mileage,
 			&i.Color,
@@ -136,7 +139,7 @@ func (q *Queries) GetAllOffers(ctx context.Context) ([]Offer, error) {
 }
 
 const getOfferById = `-- name: GetOfferById :one
-SELECT id, user_id, make, model, gearbox, mileage, color, fuel, price, owners, negotiable, description, created_at FROM offers WHERE id = $1
+SELECT id, user_id, make, model, year, gearbox, mileage, color, fuel, price, owners, negotiable, description, created_at FROM offers WHERE id = $1
 `
 
 func (q *Queries) GetOfferById(ctx context.Context, id int32) (Offer, error) {
@@ -147,6 +150,7 @@ func (q *Queries) GetOfferById(ctx context.Context, id int32) (Offer, error) {
 		&i.UserID,
 		&i.Make,
 		&i.Model,
+		&i.Year,
 		&i.Gearbox,
 		&i.Mileage,
 		&i.Color,
@@ -183,6 +187,23 @@ SELECT id, email, full_name, password, phone_number FROM users WHERE email = $1
 
 func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
 	row := q.db.QueryRow(ctx, getUserByEmail, email)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.FullName,
+		&i.Password,
+		&i.PhoneNumber,
+	)
+	return i, err
+}
+
+const getUserByID = `-- name: GetUserByID :one
+SELECT id, email, full_name, password, phone_number FROM users WHERE id = $1
+`
+
+func (q *Queries) GetUserByID(ctx context.Context, id int32) (User, error) {
+	row := q.db.QueryRow(ctx, getUserByID, id)
 	var i User
 	err := row.Scan(
 		&i.ID,

@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/udavikhin/gopher-garage/internal/api/handler/offer"
+	"github.com/udavikhin/gopher-garage/internal/api/handler/user"
 	"github.com/udavikhin/gopher-garage/internal/domain"
 	"github.com/udavikhin/gopher-garage/internal/service"
 )
@@ -62,22 +63,18 @@ func (h *OfferHandler) GetOffer(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
-	offer, err := h.services.Offer.GetOfferInfo(offerId)
+	offerInfo, userInfo, err := h.services.Offer.GetOfferInfo(r.Context(), offerId)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
 		log.Println(err)
 		return
 	}
 
-	encodedOffer, err := json.Marshal(offer)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		log.Println(err)
-		return
-	}
-
-	_, err = w.Write(encodedOffer)
-	if err != nil {
+	if err := json.NewEncoder(w).Encode(offer.GetOfferResponse{Offer: offerInfo, User: user.GetUserResponse{
+		ID:          userInfo.ID,
+		FullName:    userInfo.FullName,
+		PhoneNumber: userInfo.PhoneNumber,
+	}}); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		log.Println(err)
 		return

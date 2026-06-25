@@ -3,6 +3,7 @@ package offer
 type CreateOfferRequest struct {
 	Make        string `json:"make"        validate:"required"`
 	Model       string `json:"model"       validate:"required"`
+	Year        int    `json:"year"        validate:"required,min=1900,max=2026"`
 	Gearbox     string `json:"gearbox"     validate:"required,oneof=auto manual"`
 	Mileage     int    `json:"mileage"     validate:"required,min=0,max=999999"`
 	Color       string `json:"color"       validate:"required"`

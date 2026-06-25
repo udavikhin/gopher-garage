@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS offers (
     user_id INT REFERENCES users(id),
     make VARCHAR(255),
     model VARCHAR(255),
+    year SMALLINT,
     gearbox vehicle_gearbox DEFAULT 'auto',
     mileage INT,
     color VARCHAR(255),

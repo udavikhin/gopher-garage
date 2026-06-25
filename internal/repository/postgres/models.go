@@ -100,6 +100,7 @@ type Offer struct {
 	UserID      pgtype.Int4        `json:"user_id"`
 	Make        pgtype.Text        `json:"make"`
 	Model       pgtype.Text        `json:"model"`
+	Year        pgtype.Int2        `json:"year"`
 	Gearbox     NullVehicleGearbox `json:"gearbox"`
 	Mileage     pgtype.Int4        `json:"mileage"`
 	Color       pgtype.Text        `json:"color"`

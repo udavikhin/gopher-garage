@@ -12,7 +12,7 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/udavikhin/gopher-garage/internal/api/handler"
 	"github.com/udavikhin/gopher-garage/internal/api/routes"
 	"github.com/udavikhin/gopher-garage/internal/config"
@@ -26,7 +26,7 @@ func main() {
 	dsn := getConnectionString(cfg.Database)
 
 	conn := initDb(dsn)
-	defer conn.Close(context.Background())
+	defer conn.Close()
 
 	runMigrations(dsn)
 
@@ -39,12 +39,16 @@ func main() {
 	runServer(r, cfg.Server)
 }
 
-func initDb(dsn string) *pgx.Conn {
-	conn, err := pgx.Connect(context.Background(), dsn)
+func initDb(dsn string) *pgxpool.Pool {
+	cfg, err := pgxpool.ParseConfig(dsn)
+	if err != nil {
+		log.Fatalf("Error parsing database config: %s", err)
+	}
+	pool, err := pgxpool.NewWithConfig(context.Background(), cfg)
 	if err != nil {
 		log.Fatalf("Error connecting to database: %s", err)
 	}
-	return conn
+	return pool
 }
 
 func runMigrations(dsn string) {

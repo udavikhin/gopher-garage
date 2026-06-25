@@ -1,6 +1,12 @@
 @use "../abstracts/variables" as *;
 @use "../abstracts/mixins" as *;
 
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
 .container {
   @include page-container;
 }

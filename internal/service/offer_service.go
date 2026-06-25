@@ -23,6 +23,7 @@ func (o *OfferService) CreateOffer(offerData offer.CreateOfferRequest, userID in
 		UserID:      pgtype.Int4{Int32: int32(userID), Valid: true},
 		Make:        pgtype.Text{String: offerData.Make, Valid: true},
 		Model:       pgtype.Text{String: offerData.Model, Valid: true},
+		Year:        pgtype.Int2{Int16: int16(offerData.Year), Valid: true},
 		Gearbox:     repository.NullVehicleGearbox{VehicleGearbox: repository.VehicleGearbox(offerData.Gearbox), Valid: true},
 		Mileage:     pgtype.Int4{Int32: int32(offerData.Mileage), Valid: true},
 		Color:       pgtype.Text{String: offerData.Color, Valid: true},
@@ -38,13 +39,19 @@ func (o *OfferService) CreateOffer(offerData offer.CreateOfferRequest, userID in
 	return int(id), nil
 }
 
-func (o *OfferService) GetOfferInfo(id int) (repository.Offer, error) {
-	offerInfo, err := o.repo.GetOfferById(context.Background(), int32(id))
+func (o *OfferService) GetOfferInfo(ctx context.Context, id int) (repository.Offer, repository.User, error) {
+	offerInfo, err := o.repo.GetOfferById(ctx, int32(id))
 	if err != nil {
-		return repository.Offer{}, err
+		return repository.Offer{}, repository.User{}, err
 	}
 
-	return offerInfo, nil
+	userID := offerInfo.UserID.Int32
+	userInfo, err := o.repo.GetUserByID(ctx, userID)
+	if err != nil {
+		return repository.Offer{}, repository.User{}, err
+	}
+
+	return offerInfo, userInfo, nil
 }
 
 func (o *OfferService) GetOfferListing() ([]repository.Offer, error) {

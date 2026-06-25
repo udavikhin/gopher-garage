@@ -5,8 +5,8 @@ SELECT * FROM offers;
 SELECT * FROM offers WHERE id = $1;
 
 -- name: AddOffer :one
-INSERT INTO offers (user_id, make, model, gearbox, mileage, color, fuel, price, negotiable, description)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+INSERT INTO offers (user_id, make, model, year, gearbox, mileage, color, fuel, price, negotiable, description)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
 RETURNING id;
 
 -- name: RemoveOffer :exec
@@ -14,6 +14,9 @@ DELETE FROM offers WHERE id = $1;
 
 -- name: GetUserByEmail :one
 SELECT * FROM users WHERE email = $1;
+
+-- name: GetUserByID :one
+SELECT * FROM users WHERE id = $1;
 
 -- name: AddUser :one
 INSERT INTO users (email, full_name, password, phone_number) VALUES ($1, $2, $3, $4) RETURNING id;
