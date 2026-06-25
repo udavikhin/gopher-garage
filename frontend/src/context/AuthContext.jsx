@@ -6,7 +6,8 @@ const AuthContext = createContext(null);
 
 const parseJWTPayload = (token) => {
     const payload = token.split('.')[1];
-    return JSON.parse(atob(payload));
+    const bytes = Uint8Array.from(atob(payload), c => c.charCodeAt(0));
+    return JSON.parse(new TextDecoder().decode(bytes));
 }
 
 export const AuthProvider = ({ children }) => {
@@ -48,13 +49,7 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
         await authClient.post('login', {email, password}).then((response) => {
-            const token = response.data?.access_token;
-            const {full_name} = parseJWTPayload(token);
-            setUser({full_name});
-            setAccessToken(token);
-            setAuthHeader(token);
-            localStorage.setItem('access_token', token);
-            localStorage.setItem('user', JSON.stringify({ full_name }));
+            handleSuccessfulAuth(response.data?.access_token)
         }).catch((e) => {
             throw new Error(e?.response?.data ?? "Произошла ошибка при попытке входа")
         })
@@ -62,13 +57,19 @@ export const AuthProvider = ({ children }) => {
 
     const register = async (formData) => {
         await authClient.post('register', formData).then((response) => {
-            const token = response.data?.access_token;
-            setAccessToken(token);
-            setAuthHeader(token);
-            localStorage.setItem('access_token', token);
+            handleSuccessfulAuth(response.data?.access_token)
         }).catch((e) => {
             throw new Error(e?.response?.data ?? "Произошла ошибка при попытке регистрации")
         })
+    }
+
+    const handleSuccessfulAuth = (token) => {
+        const {user_id, full_name} = parseJWTPayload(token);
+        setUser({user_id, full_name});
+        setAccessToken(token);
+        setAuthHeader(token);
+        localStorage.setItem('access_token', token);
+        localStorage.setItem('user', JSON.stringify({ user_id, full_name }));
     }
 
     const logout = async () => {
@@ -79,7 +80,7 @@ export const AuthProvider = ({ children }) => {
             setUser(null);
             setAuthHeader(null);
             localStorage.removeItem('access_token');
-            localStorage.removeItem('full_name');
+            localStorage.removeItem('user');
         }
     }
 

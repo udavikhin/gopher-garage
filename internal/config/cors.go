@@ -9,7 +9,7 @@ type CORSConfig struct {
 func NewCORSConfig() *CORSConfig {
 	return &CORSConfig{
 		AllowedOrigins: []string{"http://localhost:5174"},
-		AllowedMethods: []string{"POST", "GET", "OPTIONS", "PUT", "DELETE"},
+		AllowedMethods: []string{"POST", "GET", "OPTIONS", "PUT", "PATCH", "DELETE"},
 		AllowedHeaders: []string{"Accept", "Content-Type", "Authorization"},
 	}
 }

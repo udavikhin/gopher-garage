@@ -83,6 +83,12 @@ func (h *OfferHandler) GetOffer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	userID, _ := r.Context().Value(domain.UserIDKey).(int)
+	if offerInfo.ArchivedAt.Valid && int32(userID) != offerInfo.UserID.Int32 {
+		http.Error(w, "not found", http.StatusNotFound)
+		return
+	}
+
 	rawPhotos, err := h.services.Offer.GetPhotos(r.Context(), offerInfo.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -235,4 +241,36 @@ func (h *OfferHandler) DeleteOffer(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
+}
+
+func (h *OfferHandler) SetOfferArchivedAt(w http.ResponseWriter, r *http.Request) {
+	offerIdUrlParam := r.PathValue("id")
+	offerId, err := strconv.Atoi(offerIdUrlParam)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
+		log.Println(err)
+		return
+	}
+
+	var body struct {
+		Archived bool `json:"archived"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	value := time.Time{}
+	if body.Archived {
+		value = time.Now()
+	}
+
+	if err = h.services.Offer.SetOfferArchivedAt(r.Context(), int32(offerId), value); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Println(err)
+		return
+	}
+
+	w.WriteHeader(http.StatusAccepted)
 }

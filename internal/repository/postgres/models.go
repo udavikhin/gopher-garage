@@ -109,6 +109,7 @@ type Offer struct {
 	Owners      pgtype.Int2        `json:"owners"`
 	Negotiable  pgtype.Bool        `json:"negotiable"`
 	Description pgtype.Text        `json:"description"`
+	ArchivedAt  pgtype.Timestamp   `json:"archived_at"`
 	CreatedAt   pgtype.Timestamp   `json:"created_at"`
 }
 

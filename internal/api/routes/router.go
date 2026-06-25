@@ -13,13 +13,15 @@ func NewRouter(handlers *handler.Handlers, cfg *config.Config) http.Handler {
 
 	authSecret := []byte(cfg.Auth.JWTSecret)
 	authMiddleware := middleware.AuthMiddleware(authSecret)
+	optionalAuthMiddleware := middleware.OptionalAuthMiddleware(authSecret)
 
 	apiV1 := http.NewServeMux()
 	apiV1.HandleFunc("GET /offers", handlers.Offer.ListOffers)
-	apiV1.HandleFunc("GET /offers/{id}", handlers.Offer.GetOffer)
+	apiV1.Handle("GET /offers/{id}", optionalAuthMiddleware(http.HandlerFunc(handlers.Offer.GetOffer)))
 	apiV1.Handle("POST /offers", authMiddleware(http.HandlerFunc(handlers.Offer.CreateOffer)))
 	apiV1.Handle("DELETE /offers/{id}", authMiddleware(http.HandlerFunc(handlers.Offer.DeleteOffer)))
 	apiV1.Handle("POST /offers/{id}/photos", authMiddleware(http.HandlerFunc(handlers.Offer.UploadPhotos)))
+	apiV1.Handle("PATCH /offers/{id}/archive", authMiddleware(http.HandlerFunc(handlers.Offer.SetOfferArchivedAt)))
 
 	r.Handle(
 		"/api/v1/",

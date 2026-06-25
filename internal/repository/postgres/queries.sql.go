@@ -119,11 +119,11 @@ func (q *Queries) DeleteRefreshTokenByHash(ctx context.Context, tokenHash string
 }
 
 const getAllOffers = `-- name: GetAllOffers :many
-SELECT o.id, o.user_id, o.make, o.model, o.year, o.gearbox, o.mileage, o.color, o.fuel, o.price, o.owners, o.negotiable, o.description, o.created_at, COALESCE(p.id, 0) AS photo_id, COALESCE(p.filename, '') AS photo_filename
+SELECT o.id, o.user_id, o.make, o.model, o.year, o.gearbox, o.mileage, o.color, o.fuel, o.price, o.owners, o.negotiable, o.description, o.archived_at, o.created_at, COALESCE(p.id, 0) AS photo_id, COALESCE(p.filename, '') AS photo_filename
 FROM offers o
 LEFT JOIN LATERAL (
     SELECT id, filename FROM offer_photos WHERE offer_id = o.id ORDER BY position LIMIT 1
-) p ON true
+) p ON true WHERE o.archived_at IS NULL
 `
 
 type GetAllOffersRow struct {
@@ -140,6 +140,7 @@ type GetAllOffersRow struct {
 	Owners        pgtype.Int2        `json:"owners"`
 	Negotiable    pgtype.Bool        `json:"negotiable"`
 	Description   pgtype.Text        `json:"description"`
+	ArchivedAt    pgtype.Timestamp   `json:"archived_at"`
 	CreatedAt     pgtype.Timestamp   `json:"created_at"`
 	PhotoID       int32              `json:"photo_id"`
 	PhotoFilename string             `json:"photo_filename"`
@@ -168,6 +169,7 @@ func (q *Queries) GetAllOffers(ctx context.Context) ([]GetAllOffersRow, error) {
 			&i.Owners,
 			&i.Negotiable,
 			&i.Description,
+			&i.ArchivedAt,
 			&i.CreatedAt,
 			&i.PhotoID,
 			&i.PhotoFilename,
@@ -183,7 +185,7 @@ func (q *Queries) GetAllOffers(ctx context.Context) ([]GetAllOffersRow, error) {
 }
 
 const getOfferById = `-- name: GetOfferById :one
-SELECT id, user_id, make, model, year, gearbox, mileage, color, fuel, price, owners, negotiable, description, created_at FROM offers WHERE id = $1
+SELECT id, user_id, make, model, year, gearbox, mileage, color, fuel, price, owners, negotiable, description, archived_at, created_at FROM offers WHERE id = $1
 `
 
 func (q *Queries) GetOfferById(ctx context.Context, id int32) (Offer, error) {
@@ -203,6 +205,7 @@ func (q *Queries) GetOfferById(ctx context.Context, id int32) (Offer, error) {
 		&i.Owners,
 		&i.Negotiable,
 		&i.Description,
+		&i.ArchivedAt,
 		&i.CreatedAt,
 	)
 	return i, err
@@ -312,5 +315,19 @@ DELETE FROM offers WHERE id = $1
 
 func (q *Queries) RemoveOffer(ctx context.Context, id int32) error {
 	_, err := q.db.Exec(ctx, removeOffer, id)
+	return err
+}
+
+const setOfferArchivedAt = `-- name: SetOfferArchivedAt :exec
+UPDATE offers SET archived_at = $1 WHERE id = $2
+`
+
+type SetOfferArchivedAtParams struct {
+	ArchivedAt pgtype.Timestamp `json:"archived_at"`
+	ID         int32            `json:"id"`
+}
+
+func (q *Queries) SetOfferArchivedAt(ctx context.Context, arg SetOfferArchivedAtParams) error {
+	_, err := q.db.Exec(ctx, setOfferArchivedAt, arg.ArchivedAt, arg.ID)
 	return err
 }

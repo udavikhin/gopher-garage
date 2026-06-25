@@ -18,3 +18,6 @@ export const uploadOfferPhotos = (id, files) => {
         headers: { 'Content-Type': undefined },
     });
 };
+export const setOfferArchived = (id, archived) => {
+    apiClient.patch(`/offers/${id}/archive`, {archived})
+}

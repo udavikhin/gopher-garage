@@ -2,9 +2,12 @@ package service
 
 import (
 	"context"
+	"errors"
+	"time"
 
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/udavikhin/gopher-garage/internal/api/handler/offer"
+	"github.com/udavikhin/gopher-garage/internal/domain"
 	repository "github.com/udavikhin/gopher-garage/internal/repository/postgres"
 )
 
@@ -101,4 +104,25 @@ func (o *OfferService) AddPhoto(ctx context.Context, offerID int32, filename str
 
 func (o *OfferService) GetPhotos(ctx context.Context, offerID int32) ([]repository.GetPhotosByOfferIDRow, error) {
 	return o.repo.GetPhotosByOfferID(ctx, pgtype.Int4{Int32: offerID, Valid: true})
+}
+
+func (o *OfferService) SetOfferArchivedAt(ctx context.Context, offerID int32, value time.Time) error {
+	offerData, err := o.repo.GetOfferById(ctx, offerID)
+	if err != nil {
+		return err
+	}
+
+	ctxUserID, ok := ctx.Value(domain.UserIDKey).(int)
+	if !ok {
+		return errors.New("unauthorized")
+	}
+
+	if offerData.UserID.Int32 != int32(ctxUserID) {
+		return errors.New("forbidden")
+	}
+
+	return o.repo.SetOfferArchivedAt(ctx, repository.SetOfferArchivedAtParams{
+		ArchivedAt: pgtype.Timestamp{Time: value, Valid: !value.IsZero()},
+		ID:         offerID,
+	})
 }

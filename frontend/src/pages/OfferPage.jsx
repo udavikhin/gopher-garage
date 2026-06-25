@@ -1,18 +1,29 @@
-import {Link, useParams} from "react-router-dom";
+import {Link, Navigate, useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
-import {getOffer} from "../api/offers.js";
+import {getOffer, setOfferArchived} from "../api/offers.js";
 import {BACKEND_URL} from "../api/client.js";
 import {fuelEnum, gearboxEnum} from "../data/const.js";
 import colorsJSON from "../data/colors.json";
 import {getInitials, getColorGradient} from "../helpers.js";
+import {useAuth} from "../context/AuthContext.jsx";
+import axios from "axios";
 
 const OfferPage = () => {
+    const {user} = useAuth();
     const {id} = useParams();
     const [offer, setOffer] = useState(null);
     const [selectedPhoto, setSelectedPhoto] = useState(0);
     const [failedPhotos, setFailedPhotos] = useState(new Set());
 
     const handlePhotoError = (photoId) => setFailedPhotos(prev => new Set([...prev, photoId]));
+
+    const handleArchive = () => {
+        const archived = !offer.archived_at;
+        setOfferArchived(offer.id, archived);
+        setOffer(prev => ({ ...prev, archived_at: archived ? new Date().toISOString() : null }));
+    };
+
+    const [notFound, setNotFound] = useState(false);
 
     useEffect(() => {
         getOffer(id)
@@ -21,9 +32,11 @@ const OfferPage = () => {
             })
             .catch((e) => {
                 console.log(e)
+                if (e.response?.status === axios.HttpStatusCode.NotFound) setNotFound(true);
             })
     }, []);
 
+    if (notFound) return <Navigate to="/404" />
     if (!offer) return <p>Загрузка...</p>;
 
     return (
@@ -58,6 +71,11 @@ const OfferPage = () => {
                         <span className="t-muted">№ {id}</span>
                     </div>
                 </div>
+                {user?.user_id === offer.user_id && (
+                    <button className="btn btn--secondary" onClick={handleArchive}>
+                        {offer.archived_at ? 'Разархивировать' : 'Снять с публикации'}
+                    </button>
+                )}
             </div>
 
             <div className="listing__gallery-row">

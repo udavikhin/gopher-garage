@@ -70,6 +70,7 @@ func (q *Queries) SearchOffers(ctx context.Context, params SearchOfferParams) ([
 			&i.Owners,
 			&i.Negotiable,
 			&i.Description,
+			&i.ArchivedAt,
 			&i.CreatedAt,
 			&i.PhotoID,
 			&i.PhotoFilename,
