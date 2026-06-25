@@ -7,7 +7,7 @@ export const createOffer = (data) => apiClient.post('/offers', data)
     .catch((e) => {
         throw new Error(e.response?.data ?? "Произошла ошибка при попытке размещения объявления");
     });
-export const getOffers = () => apiClient.get('/offers');
+export const getOffers = (params = {}) => apiClient.get('/offers', { params });
 export const getOffer = (id) => apiClient.get(`/offers/${id}`);
 export const deleteOffer = (id) => apiClient.delete(`/offers/${id}`);
 export const uploadOfferPhotos = (id, files) => {

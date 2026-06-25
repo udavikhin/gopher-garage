@@ -23,5 +23,9 @@ export function useFormData(initial) {
         }))
     }
 
-    return { formData, setFormData, handleChange }
+    const resetForm = () => {
+        setFormData(initial)
+    }
+
+    return { formData, resetForm, handleChange }
 }

@@ -2,6 +2,7 @@ import {Link} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {getOffers} from "../api/offers.js";
 import OfferCard from "../components/OfferCard.jsx";
+import SearchForm from "../components/SearchForm.jsx";
 
 const HomePage = () => {
     const [offers, setOffers] = useState(null);
@@ -22,8 +23,8 @@ const HomePage = () => {
         <>
             <section className="hero">
                 <div className="hero__inner">
-                    <h1 className="hero__title">Найдите свою следующую машину</h1>
-                    <p className="hero__sub">152 348 проверенных объявлений от частных лиц и дилеров по всей России</p>
+                    <h1 className="hero__title">Найдите свою новую машину</h1>
+                    <p className="hero__sub">152 348 объявлений по всей России</p>
 
                     <SearchForm />
                 </div>
