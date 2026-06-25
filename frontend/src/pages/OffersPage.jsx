@@ -41,12 +41,6 @@ const OffersPage = () => {
                     <h1 className="listings__title">Все объявления</h1>
                     <p className="listings__hint">{total} объявлений</p>
                 </div>
-                <button className="input-group" style={{width: 'auto', cursor: 'pointer'}}>
-                    <span>Сначала новые</span>
-                    <svg className="icon">
-                        <use href="/assets/icons/sprite.svg#i-caret-down"/>
-                    </svg>
-                </button>
             </div>
 
             <div className="listings__body">
