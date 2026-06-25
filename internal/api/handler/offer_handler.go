@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/udavikhin/gopher-garage/internal/api/handler/offer"
 	"github.com/udavikhin/gopher-garage/internal/domain"
 	"github.com/udavikhin/gopher-garage/internal/service"
 )
@@ -23,7 +24,7 @@ func NewOfferHandler(services *service.Services) *OfferHandler {
 func (h *OfferHandler) CreateOffer(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 
-	var offerBody domain.Offer
+	var offerBody offer.CreateOfferRequest
 
 	if err := decoder.Decode(&offerBody); err != nil {
 		if err.Error() != "EOF" {
@@ -33,15 +34,20 @@ func (h *OfferHandler) CreateOffer(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	offerId, err := h.services.Offer.CreateOffer(offerBody)
+	userID, ok := r.Context().Value(domain.UserIDKey).(int)
+	if !ok {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	offerId, err := h.services.Offer.CreateOffer(offerBody, userID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		log.Println(err)
 		return
 	}
 
-	_, err = w.Write([]byte(strconv.Itoa(offerId)))
-	if err != nil {
+	if err := json.NewEncoder(w).Encode(map[string]int{"id": offerId}); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		log.Println(err)
 		return

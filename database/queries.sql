@@ -16,7 +16,7 @@ DELETE FROM offers WHERE id = $1;
 SELECT * FROM users WHERE email = $1;
 
 -- name: AddUser :one
-INSERT INTO users (email, full_name, password) VALUES ($1, $2, $3) RETURNING id;
+INSERT INTO users (email, full_name, password, phone_number) VALUES ($1, $2, $3, $4) RETURNING id;
 
 -- name: AddRefreshToken :one
 INSERT INTO refresh_tokens (user_id, token_hash, expires_at) VALUES ($1, $2, $3) RETURNING id;

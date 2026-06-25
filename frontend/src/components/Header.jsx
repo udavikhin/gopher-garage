@@ -3,7 +3,6 @@ import {useAuth} from "../context/AuthContext.jsx";
 
 const Header = () => {
     const {isAuthenticated} = useAuth()
-    console.log(isAuthenticated)
 
     return (
         <header className="site-header">

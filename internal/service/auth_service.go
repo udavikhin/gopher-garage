@@ -7,10 +7,12 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"errors"
+	"net/http"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/udavikhin/gopher-garage/internal/api/handler/auth"
 	"github.com/udavikhin/gopher-garage/internal/config"
 	"github.com/udavikhin/gopher-garage/internal/domain"
 	repository "github.com/udavikhin/gopher-garage/internal/repository/postgres"
@@ -114,7 +116,19 @@ func (a *AuthService) GetRefreshTokenTTL() time.Duration {
 	return a.config.RefreshTokenTTL
 }
 
-func (a *AuthService) Register(ctx context.Context, data repository.AddUserParams) (int, error) {
+func (a *AuthService) RefreshTokenCookie(refreshToken string) *http.Cookie {
+	return &http.Cookie{
+		Name:     "refresh_token",
+		Value:    refreshToken,
+		HttpOnly: true,
+		Secure:   true,
+		SameSite: http.SameSiteLaxMode,
+		Path:     "/auth/",
+		MaxAge:   int(a.GetRefreshTokenTTL().Seconds()),
+	}
+}
+
+func (a *AuthService) Register(ctx context.Context, data auth.RegisterUserRequest) (int, error) {
 	_, err := a.repo.GetUserByEmail(ctx, data.Email)
 	if err == nil {
 		return 0, errors.New("User is already registered")
@@ -126,10 +140,50 @@ func (a *AuthService) Register(ctx context.Context, data repository.AddUserParam
 	}
 	data.Password = string(passwordHash)
 
-	userId, err := a.repo.AddUser(ctx, data)
+	userParams := repository.AddUserParams{
+		Email:       data.Email,
+		FullName:    pgtype.Text{String: data.FullName, Valid: true},
+		Password:    data.Password,
+		PhoneNumber: pgtype.Text{String: data.PhoneNumber, Valid: true},
+	}
+
+	userId, err := a.repo.AddUser(ctx, userParams)
 	if err != nil {
 		return 0, err
 	}
 
 	return int(userId), nil
+}
+
+func (a *AuthService) Refresh(ctx context.Context, refreshToken string) (*TokenPair, error) {
+	tokenHash := sha256.Sum256([]byte(refreshToken))
+	tokenHashEncoded := hex.EncodeToString(tokenHash[:])
+
+	dbEntry, err := a.repo.GetRefreshTokenByHash(ctx, tokenHashEncoded)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := a.repo.DeleteRefreshTokenByHash(ctx, tokenHashEncoded); err != nil {
+		return nil, err
+	}
+
+	tokens, err := a.generateTokenPair(int(dbEntry.UserID.Int32))
+	if err != nil {
+		return nil, err
+	}
+
+	newTokenHash := sha256.Sum256([]byte(tokens.Refresh))
+	newTokenHashEncoded := hex.EncodeToString(newTokenHash[:])
+
+	_, err = a.repo.AddRefreshToken(ctx, repository.AddRefreshTokenParams{
+		UserID:    dbEntry.UserID,
+		TokenHash: newTokenHashEncoded,
+		ExpiresAt: pgtype.Timestamp{Time: time.Now().Add(a.config.RefreshTokenTTL), Valid: true},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return tokens, nil
 }

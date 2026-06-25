@@ -2,10 +2,9 @@ package service
 
 import (
 	"context"
-	"strconv"
 
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/udavikhin/gopher-garage/internal/domain"
+	"github.com/udavikhin/gopher-garage/internal/api/handler/offer"
 	repository "github.com/udavikhin/gopher-garage/internal/repository/postgres"
 )
 
@@ -19,25 +18,18 @@ type OfferService struct {
 	repo repository.Queries
 }
 
-func (o *OfferService) CreateOffer(offer domain.Offer) (int, error) {
-	userId, err := strconv.Atoi(offer.User)
-	if err != nil {
-		return 0, err
-	}
-
+func (o *OfferService) CreateOffer(offerData offer.CreateOfferRequest, userID int) (int, error) {
 	id, err := o.repo.AddOffer(context.Background(), repository.AddOfferParams{
-		UserID: pgtype.Int4{
-			Int32: int32(userId),
-		},
-		Vehicle: pgtype.Text{
-			String: offer.Vehicle,
-		},
-		Description: pgtype.Text{
-			String: offer.Description,
-		},
-		Price: pgtype.Float8{
-			Float64: offer.Price,
-		},
+		UserID:      pgtype.Int4{Int32: int32(userID), Valid: true},
+		Make:        pgtype.Text{String: offerData.Make, Valid: true},
+		Model:       pgtype.Text{String: offerData.Model, Valid: true},
+		Gearbox:     repository.NullVehicleGearbox{VehicleGearbox: repository.VehicleGearbox(offerData.Gearbox), Valid: true},
+		Mileage:     pgtype.Int4{Int32: int32(offerData.Mileage), Valid: true},
+		Color:       pgtype.Text{String: offerData.Color, Valid: true},
+		Fuel:        repository.NullVehicleFuel{VehicleFuel: repository.VehicleFuel(offerData.Fuel), Valid: true},
+		Price:       pgtype.Int4{Int32: int32(offerData.Price), Valid: true},
+		Negotiable:  pgtype.Bool{Bool: offerData.Negotiable, Valid: true},
+		Description: pgtype.Text{String: offerData.Description, Valid: true},
 	})
 	if err != nil {
 		return 0, err
@@ -47,12 +39,12 @@ func (o *OfferService) CreateOffer(offer domain.Offer) (int, error) {
 }
 
 func (o *OfferService) GetOfferInfo(id int) (repository.Offer, error) {
-	offer, err := o.repo.GetOfferById(context.Background(), int32(id))
+	offerInfo, err := o.repo.GetOfferById(context.Background(), int32(id))
 	if err != nil {
 		return repository.Offer{}, err
 	}
 
-	return offer, nil
+	return offerInfo, nil
 }
 
 func (o *OfferService) GetOfferListing() ([]repository.Offer, error) {

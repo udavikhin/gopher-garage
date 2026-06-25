@@ -66,17 +66,23 @@ func (q *Queries) AddRefreshToken(ctx context.Context, arg AddRefreshTokenParams
 }
 
 const addUser = `-- name: AddUser :one
-INSERT INTO users (email, full_name, password) VALUES ($1, $2, $3) RETURNING id
+INSERT INTO users (email, full_name, password, phone_number) VALUES ($1, $2, $3, $4) RETURNING id
 `
 
 type AddUserParams struct {
-	Email    string      `json:"email"`
-	FullName pgtype.Text `json:"full_name"`
-	Password string      `json:"password"`
+	Email       string      `json:"email"`
+	FullName    pgtype.Text `json:"full_name"`
+	Password    string      `json:"password"`
+	PhoneNumber pgtype.Text `json:"phone_number"`
 }
 
 func (q *Queries) AddUser(ctx context.Context, arg AddUserParams) (int32, error) {
-	row := q.db.QueryRow(ctx, addUser, arg.Email, arg.FullName, arg.Password)
+	row := q.db.QueryRow(ctx, addUser,
+		arg.Email,
+		arg.FullName,
+		arg.Password,
+		arg.PhoneNumber,
+	)
 	var id int32
 	err := row.Scan(&id)
 	return id, err

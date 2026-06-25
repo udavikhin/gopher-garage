@@ -4,9 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/udavikhin/gopher-garage/internal/api/handler/auth"
-	repository "github.com/udavikhin/gopher-garage/internal/repository/postgres"
 	"github.com/udavikhin/gopher-garage/internal/service"
 	"github.com/udavikhin/gopher-garage/pkg/validator"
 )
@@ -40,15 +38,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.SetCookie(w, &http.Cookie{
-		Name:     "refresh_token",
-		Value:    tokenPair.Refresh,
-		HttpOnly: true,
-		Secure:   true,
-		SameSite: http.SameSiteStrictMode,
-		Path:     "/auth/",
-		MaxAge:   int(h.services.Auth.GetRefreshTokenTTL().Seconds()),
-	})
+	http.SetCookie(w, h.services.Auth.RefreshTokenCookie(tokenPair.Refresh))
 
 	if err := json.NewEncoder(w).Encode(map[string]string{"access_token": tokenPair.JWT}); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -71,24 +61,7 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userParams := repository.AddUserParams{
-		Email: data.Email,
-		FirstName: pgtype.Text{
-			String: data.FirstName,
-			Valid:  true,
-		},
-		LastName: pgtype.Text{
-			String: data.LastName,
-			Valid:  true,
-		},
-		Patronymic: pgtype.Text{
-			String: data.Patronymic,
-			Valid:  data.Patronymic != "",
-		},
-		Password: data.Password,
-	}
-
-	userId, err := h.services.Auth.Register(r.Context(), userParams)
+	userId, err := h.services.Auth.Register(r.Context(), data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -102,4 +75,23 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *AuthHandler) Refresh(w http.ResponseWriter, r *http.Request) {}
+func (h *AuthHandler) Refresh(w http.ResponseWriter, r *http.Request) {
+	cookie, err := r.Cookie("refresh_token")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
+	}
+
+	tokenPair, err := h.services.Auth.Refresh(r.Context(), cookie.Value)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
+	}
+
+	http.SetCookie(w, h.services.Auth.RefreshTokenCookie(tokenPair.Refresh))
+
+	if err := json.NewEncoder(w).Encode(map[string]string{"access_token": tokenPair.JWT}); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
