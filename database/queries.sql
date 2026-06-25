@@ -1,6 +1,9 @@
 -- name: GetAllOffers :many
 SELECT * FROM offers;
 
+-- name: GetOffersCount :one
+SELECT count(*) FROM offers;
+
 -- name: GetOfferById :one
 SELECT * FROM offers WHERE id = $1;
 
@@ -29,3 +32,9 @@ SELECT * FROM refresh_tokens WHERE token_hash = $1 AND expires_at > NOW();
 
 -- name: DeleteRefreshTokenByHash :exec
 DELETE FROM refresh_tokens WHERE token_hash = $1;
+
+-- name: GetPhotosByOfferID :many
+SELECT id, offer_id, filename, position FROM offer_photos WHERE offer_id = $1 ORDER BY position;
+
+-- name: AddOfferPhoto :one
+INSERT INTO offer_photos (offer_id, filename, position) VALUES ($1, $2, $3) RETURNING id;

@@ -52,6 +52,23 @@ func (q *Queries) AddOffer(ctx context.Context, arg AddOfferParams) (int32, erro
 	return id, err
 }
 
+const addOfferPhoto = `-- name: AddOfferPhoto :one
+INSERT INTO offer_photos (offer_id, filename, position) VALUES ($1, $2, $3) RETURNING id
+`
+
+type AddOfferPhotoParams struct {
+	OfferID  pgtype.Int4 `json:"offer_id"`
+	Filename string      `json:"filename"`
+	Position int16       `json:"position"`
+}
+
+func (q *Queries) AddOfferPhoto(ctx context.Context, arg AddOfferPhotoParams) (int32, error) {
+	row := q.db.QueryRow(ctx, addOfferPhoto, arg.OfferID, arg.Filename, arg.Position)
+	var id int32
+	err := row.Scan(&id)
+	return id, err
+}
+
 const addRefreshToken = `-- name: AddRefreshToken :one
 INSERT INTO refresh_tokens (user_id, token_hash, expires_at) VALUES ($1, $2, $3) RETURNING id
 `
@@ -164,6 +181,53 @@ func (q *Queries) GetOfferById(ctx context.Context, id int32) (Offer, error) {
 		&i.CreatedAt,
 	)
 	return i, err
+}
+
+const getOffersCount = `-- name: GetOffersCount :one
+SELECT count(*) FROM offers
+`
+
+func (q *Queries) GetOffersCount(ctx context.Context) (int64, error) {
+	row := q.db.QueryRow(ctx, getOffersCount)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
+const getPhotosByOfferID = `-- name: GetPhotosByOfferID :many
+SELECT id, offer_id, filename, position FROM offer_photos WHERE offer_id = $1 ORDER BY position
+`
+
+type GetPhotosByOfferIDRow struct {
+	ID       int32       `json:"id"`
+	OfferID  pgtype.Int4 `json:"offer_id"`
+	Filename string      `json:"filename"`
+	Position int16       `json:"position"`
+}
+
+func (q *Queries) GetPhotosByOfferID(ctx context.Context, offerID pgtype.Int4) ([]GetPhotosByOfferIDRow, error) {
+	rows, err := q.db.Query(ctx, getPhotosByOfferID, offerID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetPhotosByOfferIDRow
+	for rows.Next() {
+		var i GetPhotosByOfferIDRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.OfferID,
+			&i.Filename,
+			&i.Position,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getRefreshTokenByHash = `-- name: GetRefreshTokenByHash :one

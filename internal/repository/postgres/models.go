@@ -112,6 +112,14 @@ type Offer struct {
 	CreatedAt   pgtype.Timestamp   `json:"created_at"`
 }
 
+type OfferPhoto struct {
+	ID        int32            `json:"id"`
+	OfferID   pgtype.Int4      `json:"offer_id"`
+	Filename  string           `json:"filename"`
+	Position  int16            `json:"position"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+}
+
 type RefreshToken struct {
 	ID        int32            `json:"id"`
 	UserID    pgtype.Int4      `json:"user_id"`
