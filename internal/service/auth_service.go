@@ -128,15 +128,15 @@ func (a *AuthService) RefreshTokenCookie(refreshToken string) *http.Cookie {
 	}
 }
 
-func (a *AuthService) Register(ctx context.Context, data auth.RegisterUserRequest) (int, error) {
+func (a *AuthService) Register(ctx context.Context, data auth.RegisterUserRequest) (int, *TokenPair, error) {
 	_, err := a.repo.GetUserByEmail(ctx, data.Email)
 	if err == nil {
-		return 0, errors.New("User is already registered")
+		return 0, nil, errors.New("Пользователь с таким e-mail уже зарегистрирован")
 	}
 
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(data.Password), bcrypt.DefaultCost)
 	if err != nil {
-		return 0, err
+		return 0, nil, err
 	}
 	data.Password = string(passwordHash)
 
@@ -149,10 +149,26 @@ func (a *AuthService) Register(ctx context.Context, data auth.RegisterUserReques
 
 	userId, err := a.repo.AddUser(ctx, userParams)
 	if err != nil {
-		return 0, err
+		return 0, nil, err
 	}
 
-	return int(userId), nil
+	tokens, err := a.generateTokenPair(int(userId))
+	if err != nil {
+		return 0, nil, err
+	}
+
+	tokenHash := sha256.Sum256([]byte(tokens.Refresh))
+	tokenHashEncoded := hex.EncodeToString(tokenHash[:])
+	_, err = a.repo.AddRefreshToken(ctx, repository.AddRefreshTokenParams{
+		UserID:    pgtype.Int4{Int32: userId, Valid: true},
+		TokenHash: tokenHashEncoded,
+		ExpiresAt: pgtype.Timestamp{Time: time.Now().Add(a.config.RefreshTokenTTL), Valid: true},
+	})
+	if err != nil {
+		return 0, nil, err
+	}
+
+	return int(userId), tokens, nil
 }
 
 func (a *AuthService) Refresh(ctx context.Context, refreshToken string) (*TokenPair, error) {

@@ -1,4 +1,5 @@
 import {Link} from "react-router-dom";
+import RegisterForm from "../components/RegisterForm.jsx";
 
 const RegisterPage = () => {
     return (
@@ -11,48 +12,7 @@ const RegisterPage = () => {
                 </Link>
 
                 <div className="auth__form-wrap">
-                    <form className="auth__form">
-                        <header>
-                            <h1 className="auth__title">Создайте аккаунт</h1>
-                            <p className="auth__sub">Это займёт меньше минуты — и вы сможете публиковать объявления.</p>
-                        </header>
-
-                        <label className="field"><span className="field__label">Имя</span>
-                            <input className="input" type="text" defaultValue="Алексей Петров"/>
-                        </label>
-
-                        <label className="field"><span className="field__label">Email</span>
-                            <input className="input is-focused" type="email" defaultValue="a.petrov@mail.ru"/>
-                        </label>
-
-                        <label className="field"><span className="field__label">Телефон</span>
-                            <div className="input-group">
-                                <span className="prefix">+7</span>
-                                <input type="tel" defaultValue="(925) 412-00-58"/>
-                            </div>
-                        </label>
-
-                        <label className="field">
-                            <span className="field__label">Пароль <span
-                                className="field__hint">Минимум 8 символов</span></span>
-                            <div className="input-group">
-                                <input type="password" defaultValue="••••••••••"/>
-                                <svg className="icon" style={{color: "var(--font-tertiary)", width: "18px", height: "18px"}}>
-                                    <use href="/assets/icons/sprite.svg#i-eye"/>
-                                </svg>
-                            </div>
-                        </label>
-
-                        <label className="checkbox">
-                            <input type="checkbox" defaultChecked/>
-                            <span className="box"></span>
-                            Я согласен с условиями использования и политикой конфиденциальности
-                        </label>
-
-                        <button className="btn btn--primary btn--block btn--lg" type="submit">Создать аккаунт</button>
-
-                        <p className="auth__signin">Уже есть аккаунт? <Link to="/login">Войти</Link></p>
-                    </form>
+                    <RegisterForm />
                 </div>
             </section>
 

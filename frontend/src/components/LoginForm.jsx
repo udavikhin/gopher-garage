@@ -2,7 +2,7 @@ import {useAuth} from "../context/AuthContext.jsx";
 import {useState} from "react";
 import {Link, useNavigate} from "react-router-dom";
 
-function LoginForm() {
+const LoginForm = () => {
     const {login} = useAuth()
     const navigate = useNavigate();
 

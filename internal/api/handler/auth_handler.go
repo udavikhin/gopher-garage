@@ -61,7 +61,7 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userId, err := h.services.Auth.Register(r.Context(), data)
+	userID, tokens, err := h.services.Auth.Register(r.Context(), data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -69,7 +69,8 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusCreated)
 
-	if err := json.NewEncoder(w).Encode(userId); err != nil {
+	http.SetCookie(w, h.services.Auth.RefreshTokenCookie(tokens.Refresh))
+	if err := json.NewEncoder(w).Encode(map[string]any{"id": userID, "access_token": tokens.JWT}); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

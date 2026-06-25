@@ -50,8 +50,19 @@ export const AuthProvider = ({ children }) => {
         })
     }
 
+    const register = async (formData) => {
+        await authClient.post('register', formData).then((response) => {
+            const token = response.data?.access_token;
+            setAccessToken(token);
+            setAuthHeader(token);
+            localStorage.setItem('access_token', token);
+        }).catch((e) => {
+            throw new Error(e?.response?.data ?? "Произошла ошибка при попытке регистрации")
+        })
+    }
+
     return (
-        <AuthContext.Provider value={{ user, accessToken, login, isAuthenticated: !!accessToken }}>
+        <AuthContext.Provider value={{ user, accessToken, login, register, isAuthenticated: !!accessToken }}>
             {children}
         </AuthContext.Provider>
     )

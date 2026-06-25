@@ -4,7 +4,7 @@ import {createOffer} from "../api/offers.js";
 import carsJSON from "../data/cars.json";
 import colorsJSON from "../data/colors.json";
 
-function OfferForm() {
+const OfferForm = () => {
     const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
