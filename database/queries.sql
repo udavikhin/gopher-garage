@@ -3,7 +3,7 @@ SELECT o.*, COALESCE(p.id, 0) AS photo_id, COALESCE(p.filename, '') AS photo_fil
 FROM offers o
 LEFT JOIN LATERAL (
     SELECT id, filename FROM offer_photos WHERE offer_id = o.id ORDER BY position LIMIT 1
-) p ON true;
+) p ON true WHERE o.archived_at IS NULL;
 
 -- name: GetOffersCount :one
 SELECT count(*) FROM offers;
@@ -18,6 +18,9 @@ RETURNING id;
 
 -- name: RemoveOffer :exec
 DELETE FROM offers WHERE id = $1;
+
+-- name: SetOfferArchivedAt :exec
+UPDATE offers SET archived_at = $1 WHERE id = $2;
 
 -- name: GetUserByEmail :one
 SELECT * FROM users WHERE email = $1;

@@ -15,5 +15,6 @@ CREATE TABLE IF NOT EXISTS offers (
     owners SMALLINT,
     negotiable BOOL DEFAULT TRUE,
     description VARCHAR(5000),
+    archived_at TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )
