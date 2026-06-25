@@ -19,8 +19,8 @@ const LoginPage = () => {
                      style={{backgroundImage: "url(/assets/images/auth-illustration.png)"}}></div>
 
                 <figure className="auth__testimonial">
-                    <blockquote>«Нашёл покупателя за два дня — по честной цене»</blockquote>
-                    <figcaption>Иван К., Москва · продал LADA Vesta</figcaption>
+                    <blockquote>Совет</blockquote>
+                    <figcaption>После продажи автомобиля Вы можете снять объявление с публикации. Оно будет храниться в архиве и будет доступно только Вам. При необходимости Вы сможете его восстановить.</figcaption>
                 </figure>
             </aside>
 

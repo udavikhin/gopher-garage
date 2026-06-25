@@ -34,24 +34,24 @@ const RegisterForm = () => {
             </header>
 
             <label className="field"><span className="field__label">Имя</span>
-                <input className="input" type="text" name="full_name" value={formData.full_name} onChange={handleChange} required/>
+                <input className="input" placeholder="Иванов Василий Петрович" type="text" name="full_name" value={formData.full_name} onChange={handleChange} required/>
             </label>
 
             <label className="field"><span className="field__label">Email</span>
-                <input className="input" type="email" name="email" value={formData.email} onChange={handleChange} required/>
+                <input className="input" placeholder="ivanov@gmail.com" type="email" name="email" value={formData.email} onChange={handleChange} required/>
             </label>
 
             <label className="field"><span className="field__label">Телефон</span>
                 <div className="input-group">
                     <span className="prefix">+7</span>
-                    <input type="tel" name="phone_number" value={formData.phone_number} onChange={handleChange} required/>
+                    <input type="tel" placeholder="(996)-991-97-97" name="phone_number" value={formData.phone_number} onChange={handleChange} required/>
                 </div>
             </label>
 
             <label className="field">
                 <span className="field__label">Пароль <span className="field__hint">Минимум 8 символов</span></span>
                 <div className="input-group">
-                    <input type="password" name="password" value={formData.password} onChange={handleChange} required/>
+                    <input type="password" minLength="8" placeholder="••••••••••" name="password" value={formData.password} onChange={handleChange} required/>
                     <svg className="icon" style={{color: "var(--font-tertiary)", width: "18px", height: "18px"}}>
                         <use href="/assets/icons/sprite.svg#i-eye"/>
                     </svg>
