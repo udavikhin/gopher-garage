@@ -1,5 +1,9 @@
 -- name: GetAllOffers :many
-SELECT * FROM offers;
+SELECT o.*, COALESCE(p.id, 0) AS photo_id, COALESCE(p.filename, '') AS photo_filename
+FROM offers o
+LEFT JOIN LATERAL (
+    SELECT id, filename FROM offer_photos WHERE offer_id = o.id ORDER BY position LIMIT 1
+) p ON true;
 
 -- name: GetOffersCount :one
 SELECT count(*) FROM offers;

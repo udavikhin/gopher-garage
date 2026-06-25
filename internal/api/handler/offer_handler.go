@@ -3,9 +3,14 @@ package handler
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
+	"io"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strconv"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/udavikhin/gopher-garage/internal/api/handler/offer"
@@ -77,15 +82,95 @@ func (h *OfferHandler) GetOffer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := json.NewEncoder(w).Encode(offer.GetOfferResponse{Offer: offerInfo, User: user.GetUserResponse{
-		ID:          userInfo.ID,
-		FullName:    userInfo.FullName,
-		PhoneNumber: userInfo.PhoneNumber,
-	}}); err != nil {
+	rawPhotos, err := h.services.Offer.GetPhotos(r.Context(), offerInfo.ID)
+	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		log.Println(err)
 		return
 	}
+
+	photos := make([]offer.PhotoResponse, len(rawPhotos))
+	for i, p := range rawPhotos {
+		photos[i] = offer.PhotoResponse{
+			ID:  p.ID,
+			URL: fmt.Sprintf("/uploads/offers/%d/%s", offerInfo.ID, p.Filename),
+		}
+	}
+
+	if err := json.NewEncoder(w).Encode(offer.GetOfferResponse{
+		Offer: offerInfo,
+		User: user.GetUserResponse{
+			ID:          userInfo.ID,
+			FullName:    userInfo.FullName,
+			PhoneNumber: userInfo.PhoneNumber,
+		},
+		Photos: photos,
+	}); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Println(err)
+		return
+	}
+}
+
+func (h *OfferHandler) UploadPhotos(w http.ResponseWriter, r *http.Request) {
+	offerID, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
+		return
+	}
+
+	if err := r.ParseMultipartForm(200 << 20); err != nil {
+		http.Error(w, "request too large", http.StatusRequestEntityTooLarge)
+		return
+	}
+
+	files := r.MultipartForm.File["photos"]
+	uploadDir := fmt.Sprintf("/uploads/offers/%d", offerID)
+	if err := os.MkdirAll(uploadDir, 0755); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Println(err)
+		return
+	}
+
+	for i, fh := range files {
+		ext := filepath.Ext(fh.Filename)
+		if ext != ".jpg" && ext != ".jpeg" && ext != ".png" {
+			http.Error(w, "только JPG и PNG", http.StatusUnprocessableEntity)
+			return
+		}
+
+		filename := fmt.Sprintf("%d_%d%s", time.Now().UnixNano(), i, ext)
+
+		src, err := fh.Open()
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println(err)
+			return
+		}
+		defer src.Close()
+
+		dst, err := os.Create(filepath.Join(uploadDir, filename))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println(err)
+			return
+		}
+		defer dst.Close()
+
+		if _, err := io.Copy(dst, src); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println(err)
+			return
+		}
+
+		if err := h.services.Offer.AddPhoto(r.Context(), int32(offerID), filename, int16(i)); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println(err)
+			return
+		}
+	}
+
+	w.WriteHeader(http.StatusCreated)
 }
 
 func (h *OfferHandler) ListOffers(w http.ResponseWriter, r *http.Request) {
@@ -95,18 +180,19 @@ func (h *OfferHandler) ListOffers(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
-	encodedOffers, err := json.Marshal(offers)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		log.Println(err)
-		return
+
+	response := make([]offer.ListOfferResponse, len(offers))
+	for i, o := range offers {
+		var photoURL string
+		if o.PhotoFilename != "" {
+			photoURL = fmt.Sprintf("/uploads/offers/%d/%s", o.ID, o.PhotoFilename)
+		}
+		response[i] = offer.ListOfferResponse{GetAllOffersRow: o, PhotoURL: photoURL}
 	}
 
-	_, err = w.Write(encodedOffers)
-	if err != nil {
+	if err := json.NewEncoder(w).Encode(response); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		log.Println(err)
-		return
 	}
 }
 

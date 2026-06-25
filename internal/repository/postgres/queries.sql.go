@@ -119,18 +119,41 @@ func (q *Queries) DeleteRefreshTokenByHash(ctx context.Context, tokenHash string
 }
 
 const getAllOffers = `-- name: GetAllOffers :many
-SELECT id, user_id, make, model, year, gearbox, mileage, color, fuel, price, owners, negotiable, description, created_at FROM offers
+SELECT o.id, o.user_id, o.make, o.model, o.year, o.gearbox, o.mileage, o.color, o.fuel, o.price, o.owners, o.negotiable, o.description, o.created_at, COALESCE(p.id, 0) AS photo_id, COALESCE(p.filename, '') AS photo_filename
+FROM offers o
+LEFT JOIN LATERAL (
+    SELECT id, filename FROM offer_photos WHERE offer_id = o.id ORDER BY position LIMIT 1
+) p ON true
 `
 
-func (q *Queries) GetAllOffers(ctx context.Context) ([]Offer, error) {
+type GetAllOffersRow struct {
+	ID            int32              `json:"id"`
+	UserID        pgtype.Int4        `json:"user_id"`
+	Make          pgtype.Text        `json:"make"`
+	Model         pgtype.Text        `json:"model"`
+	Year          pgtype.Int2        `json:"year"`
+	Gearbox       NullVehicleGearbox `json:"gearbox"`
+	Mileage       pgtype.Int4        `json:"mileage"`
+	Color         pgtype.Text        `json:"color"`
+	Fuel          NullVehicleFuel    `json:"fuel"`
+	Price         pgtype.Int4        `json:"price"`
+	Owners        pgtype.Int2        `json:"owners"`
+	Negotiable    pgtype.Bool        `json:"negotiable"`
+	Description   pgtype.Text        `json:"description"`
+	CreatedAt     pgtype.Timestamp   `json:"created_at"`
+	PhotoID       int32              `json:"photo_id"`
+	PhotoFilename string             `json:"photo_filename"`
+}
+
+func (q *Queries) GetAllOffers(ctx context.Context) ([]GetAllOffersRow, error) {
 	rows, err := q.db.Query(ctx, getAllOffers)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Offer
+	var items []GetAllOffersRow
 	for rows.Next() {
-		var i Offer
+		var i GetAllOffersRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.UserID,
@@ -146,6 +169,8 @@ func (q *Queries) GetAllOffers(ctx context.Context) ([]Offer, error) {
 			&i.Negotiable,
 			&i.Description,
 			&i.CreatedAt,
+			&i.PhotoID,
+			&i.PhotoFilename,
 		); err != nil {
 			return nil, err
 		}

@@ -1,6 +1,6 @@
-import {useState} from "react";
+import {useRef, useState} from "react";
 import {Link, useNavigate} from "react-router-dom";
-import {createOffer} from "../api/offers.js";
+import {createOffer, uploadOfferPhotos} from "../api/offers.js";
 import carsJSON from "../data/cars.json";
 import colorsJSON from "../data/colors.json";
 import {useFormData} from "../hooks/useFormData.js";
@@ -27,12 +27,26 @@ const OfferForm = () => {
 
     const colors = Object.entries(colorsJSON);
 
+    const [photos, setPhotos] = useState([]);
+    const fileInputRef = useRef(null);
+
+    const handlePhotoSelect = (e) => {
+        const files = Array.from(e.target.files);
+        setPhotos(prev => [...prev, ...files].slice(0, 20));
+        e.target.value = '';
+    };
+
+    const removePhoto = (index) => {
+        setPhotos(prev => prev.filter((_, i) => i !== index));
+    };
+
     const [error, setError] = useState(null)
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             const id = await createOffer(formData);
+            if (photos.length > 0) await uploadOfferPhotos(id, photos);
             navigate(`/offers/${id}`);
         } catch (e) {
             setError(e.message)
@@ -98,16 +112,34 @@ const OfferForm = () => {
 
             <section className="card">
                 <h2 className="h-display-s">Фотографии</h2>
-                <div className="post-form__upload">
+                <div className="post-form__upload" onClick={() => fileInputRef.current.click()}>
                     <svg className="icon">
                         <use href="/assets/icons/sprite.svg#i-cloud-upload"/>
                     </svg>
                     <span className="lead">Перетащите фото или нажмите для выбора</span>
                     <span className="sub">До 20 фото, формат JPG/PNG, до 10 МБ каждая</span>
                 </div>
+                <input
+                    ref={fileInputRef}
+                    type="file"
+                    multiple
+                    accept="image/jpeg,image/png"
+                    style={{display: 'none'}}
+                    onChange={handlePhotoSelect}
+                />
                 <div className="post-form__thumbs">
-                    <div className="post-form__thumb"><span className="x">×</span></div>
-                    <div className="post-form__thumb post-form__thumb--add">+</div>
+                    {photos.map((file, i) => (
+                        <div
+                            key={i}
+                            className="post-form__thumb"
+                            style={{backgroundImage: `url(${URL.createObjectURL(file)})`}}
+                        >
+                            <span className="x" onClick={() => removePhoto(i)}>×</span>
+                        </div>
+                    ))}
+                    {photos.length < 20 && (
+                        <div className="post-form__thumb post-form__thumb--add" onClick={() => fileInputRef.current.click()}>+</div>
+                    )}
                 </div>
             </section>
 

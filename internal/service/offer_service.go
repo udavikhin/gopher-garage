@@ -55,13 +55,8 @@ func (o *OfferService) GetOfferInfo(ctx context.Context, id int) (repository.Off
 	return offerInfo, userInfo, nil
 }
 
-func (o *OfferService) GetOfferListing() ([]repository.Offer, error) {
-	offers, err := o.repo.GetAllOffers(context.Background())
-	if err != nil {
-		return nil, err
-	}
-
-	return offers, nil
+func (o *OfferService) GetOfferListing() ([]repository.GetAllOffersRow, error) {
+	return o.repo.GetAllOffers(context.Background())
 }
 
 func (o *OfferService) RemoveOffer(id int) error {
@@ -70,4 +65,17 @@ func (o *OfferService) RemoveOffer(id int) error {
 	}
 
 	return nil
+}
+
+func (o *OfferService) AddPhoto(ctx context.Context, offerID int32, filename string, position int16) error {
+	_, err := o.repo.AddOfferPhoto(ctx, repository.AddOfferPhotoParams{
+		OfferID:  pgtype.Int4{Int32: offerID, Valid: true},
+		Filename: filename,
+		Position: position,
+	})
+	return err
+}
+
+func (o *OfferService) GetPhotos(ctx context.Context, offerID int32) ([]repository.GetPhotosByOfferIDRow, error) {
+	return o.repo.GetPhotosByOfferID(ctx, pgtype.Int4{Int32: offerID, Valid: true})
 }

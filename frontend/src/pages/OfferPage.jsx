@@ -1,12 +1,14 @@
 import {Link, useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {getOffer} from "../api/offers.js";
+import {BACKEND_URL} from "../api/client.js";
 import {fuelEnum, gearboxEnum} from "../data/const.js";
 import {getInitials} from "../helpers.js";
 
 const OfferPage = () => {
     const {id} = useParams();
     const [offer, setOffer] = useState(null);
+    const [selectedPhoto, setSelectedPhoto] = useState(0);
 
     useEffect(() => {
         getOffer(id)
@@ -57,22 +59,16 @@ const OfferPage = () => {
             <div className="listing__gallery-row">
                 <div>
                     <div className="listing__photo"
-                         style={{backgroundImage: 'url(assets/images/cars/bmw-320i-large.jpg)'}}></div>
+                         style={{backgroundImage: offer.photos?.[selectedPhoto] ? `url(${BACKEND_URL}${offer.photos[selectedPhoto].url})` : 'none'}}></div>
                     <div className="listing__thumbs">
-                        <div className="listing__thumb"
-                             style={{backgroundImage: "url(assets/images/cars/bmw-320i-1.jpg)"}}></div>
-                        <div className="listing__thumb is-active"
-                             style={{backgroundImage: "url(assets/images/cars/bmw-320i-large.jpg)"}}></div>
-                        <div className="listing__thumb"
-                             style={{backgroundImage: "url(assets/images/cars/bmw-320i-3.jpg)"}}></div>
-                        <div className="listing__thumb"
-                             style={{backgroundImage: "url(assets/images/cars/bmw-320i-4.jpg)"}}></div>
-                        <div className="listing__thumb"
-                             style={{backgroundImage: "url(assets/images/cars/bmw-320i-5.jpg)"}}></div>
-                        <div className="listing__thumb"
-                             style={{backgroundImage: "url(assets/images/cars/bmw-320i-6.jpg)"}}></div>
-                        <div className="listing__thumb"
-                             style={{backgroundImage: "url(assets/images/cars/bmw-320i-7.jpg)"}}></div>
+                        {offer.photos?.map((photo, i) => (
+                            <div
+                                key={photo.id}
+                                className={`listing__thumb${i === selectedPhoto ? ' is-active' : ''}`}
+                                style={{backgroundImage: `url(${BACKEND_URL}${photo.url})`}}
+                                onClick={() => setSelectedPhoto(i)}
+                            />
+                        ))}
                     </div>
                 </div>
 
