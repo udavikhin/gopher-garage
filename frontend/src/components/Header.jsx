@@ -20,7 +20,7 @@ const Header = () => {
                     </nav>
                 </div>
                 <div className="site-header__right">
-                    {isAuthenticated ?
+                    {isAuthenticated && user ?
                         (<>
                             <Link className="btn btn--primary" to="/offers/create">
                                 <svg className="icon">
