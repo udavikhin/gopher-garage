@@ -3,6 +3,7 @@ import {useEffect, useState} from "react";
 import {getOffer} from "../api/offers.js";
 import {BACKEND_URL} from "../api/client.js";
 import {fuelEnum, gearboxEnum} from "../data/const.js";
+import colorsJSON from "../data/colors.json";
 import {getInitials, getColorGradient} from "../helpers.js";
 
 const OfferPage = () => {
@@ -36,11 +37,11 @@ const OfferPage = () => {
                 <svg className="breadcrumbs__sep">
                     <use href="/assets/icons/sprite.svg#i-caret-right"/>
                 </svg>
-                <a href="listings.html">{offer.make}</a>
+                <Link to={`/offers?make=${offer.make}`}>{offer.make}</Link>
                 <svg className="breadcrumbs__sep">
                     <use href="/assets/icons/sprite.svg#i-caret-right"/>
                 </svg>
-                <a href="listings.html">{offer.model}</a>
+                <Link to={`/offers?make=${offer.make}&model=${offer.model}`}>{offer.model}</Link>
                 <svg className="breadcrumbs__sep">
                     <use href="/assets/icons/sprite.svg#i-caret-right"/>
                 </svg>
@@ -131,7 +132,7 @@ const OfferPage = () => {
                     </div>
                     <div className="specs-card__item">
                         <div className="specs-card__item-label">Цвет</div>
-                        <div className="specs-card__item-value">{offer.color}</div>
+                        <div className="specs-card__item-value">{colorsJSON[offer.color].name}</div>
                     </div>
                     <div className="specs-card__item">
                         <div className="specs-card__item-label">Топливо</div>
