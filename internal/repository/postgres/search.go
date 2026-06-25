@@ -17,13 +17,10 @@ func (f *filter) add(condition string, arg any) {
 }
 
 func (f *filter) build() string {
-	where := ""
-
-	if len(f.conditions) > 0 {
-		where = " WHERE " + strings.Join(f.conditions, " AND ")
+	if len(f.conditions) == 0 {
+		return ""
 	}
-
-	return where
+	return " AND " + strings.Join(f.conditions, " AND ")
 }
 
 type SearchOfferParams struct {
@@ -115,7 +112,7 @@ func constructSearchOfferParamsFilter(params SearchOfferParams) *filter {
 
 func (q *Queries) CountFilteredOffers(ctx context.Context, f *filter) (int, error) {
 	var total int
-	err := q.db.QueryRow(ctx, "SELECT COUNT(*) FROM offers o"+f.build(), f.args...).Scan(&total)
+	err := q.db.QueryRow(ctx, "SELECT COUNT(*) FROM offers o WHERE o.archived_at IS NULL"+f.build(), f.args...).Scan(&total)
 	if err != nil {
 		return 0, err
 	}
