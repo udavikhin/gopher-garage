@@ -10,3 +10,10 @@ export const createOffer = (data) => apiClient.post('/offers', data)
 export const getOffers = () => apiClient.get('/offers');
 export const getOffer = (id) => apiClient.get(`/offers/${id}`);
 export const deleteOffer = (id) => apiClient.delete(`/offers/${id}`);
+export const uploadOfferPhotos = (id, files) => {
+    const formData = new FormData();
+    files.forEach(file => formData.append('photos', file));
+    return apiClient.post(`/offers/${id}/photos`, formData, {
+        headers: { 'Content-Type': undefined },
+    });
+};

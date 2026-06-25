@@ -19,6 +19,7 @@ func NewRouter(handlers *handler.Handlers, cfg *config.Config) http.Handler {
 	apiV1.HandleFunc("GET /offers/{id}", handlers.Offer.GetOffer)
 	apiV1.Handle("POST /offers", authMiddleware(http.HandlerFunc(handlers.Offer.CreateOffer)))
 	apiV1.Handle("DELETE /offers/{id}", authMiddleware(http.HandlerFunc(handlers.Offer.DeleteOffer)))
+	apiV1.Handle("POST /offers/{id}/photos", authMiddleware(http.HandlerFunc(handlers.Offer.UploadPhotos)))
 
 	r.Handle(
 		"/api/v1/",
@@ -35,6 +36,8 @@ func NewRouter(handlers *handler.Handlers, cfg *config.Config) http.Handler {
 		"/auth/",
 		http.StripPrefix("/auth", middleware.Chain(middleware.ContentJsonMiddleware)(auth)),
 	)
+
+	r.Handle("/uploads/", http.StripPrefix("/uploads/", http.FileServer(http.Dir("/uploads"))))
 
 	CORSMiddleware := middleware.CORSMiddleware(cfg.CORS)
 
