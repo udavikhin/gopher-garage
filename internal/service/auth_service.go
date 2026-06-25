@@ -49,7 +49,7 @@ func (a *AuthService) Login(ctx context.Context, email string, password string) 
 		return nil, credentialsError
 	}
 
-	tokens, err := a.generateTokenPair(int(user.ID))
+	tokens, err := a.generateTokenPair(int(user.ID), user.FullName.String)
 	if err != nil {
 		return nil, err
 	}
@@ -74,8 +74,8 @@ func (a *AuthService) Login(ctx context.Context, email string, password string) 
 	return tokens, nil
 }
 
-func (a *AuthService) generateTokenPair(userID int) (*TokenPair, error) {
-	token := a.generateJWT(userID)
+func (a *AuthService) generateTokenPair(userID int, fullName string) (*TokenPair, error) {
+	token := a.generateJWT(userID, fullName)
 	signingKey := []byte(a.config.JWTSecret)
 	ss, err := token.SignedString(signingKey)
 	if err != nil {
@@ -92,9 +92,10 @@ func (a *AuthService) generateTokenPair(userID int) (*TokenPair, error) {
 	}, nil
 }
 
-func (a *AuthService) generateJWT(userID int) *jwt.Token {
+func (a *AuthService) generateJWT(userID int, fullName string) *jwt.Token {
 	claims := domain.JWTClaims{
-		UserID: userID,
+		UserID:   userID,
+		FullName: fullName,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(a.config.AccessTokenTTL)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
@@ -152,7 +153,7 @@ func (a *AuthService) Register(ctx context.Context, data auth.RegisterUserReques
 		return 0, nil, err
 	}
 
-	tokens, err := a.generateTokenPair(int(userId))
+	tokens, err := a.generateTokenPair(int(userId), data.FullName)
 	if err != nil {
 		return 0, nil, err
 	}
@@ -184,7 +185,13 @@ func (a *AuthService) Refresh(ctx context.Context, refreshToken string) (*TokenP
 		return nil, err
 	}
 
-	tokens, err := a.generateTokenPair(int(dbEntry.UserID.Int32))
+	userID := int(dbEntry.UserID.Int32)
+	user, err := a.repo.GetUserByID(ctx, int32(userID))
+	if err != nil {
+		return nil, err
+	}
+
+	tokens, err := a.generateTokenPair(int(dbEntry.UserID.Int32), user.FullName.String)
 	if err != nil {
 		return nil, err
 	}

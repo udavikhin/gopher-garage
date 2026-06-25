@@ -1,8 +1,10 @@
 import {Link} from "react-router-dom";
 import {useAuth} from "../context/AuthContext.jsx";
+import {getInitials} from "../helpers.js";
 
 const Header = () => {
-    const {isAuthenticated} = useAuth()
+    const {isAuthenticated, user} = useAuth()
+    console.log(user)
 
     return (
         <header className="site-header">
@@ -27,7 +29,7 @@ const Header = () => {
                                 </svg>
                                 Разместить объявление
                             </Link>
-                            <div className="avatar avatar--md" aria-label="Иван Иванов">ИИ</div>
+                            <div className="avatar avatar--md" aria-label={user.full_name}>{getInitials(user.full_name)}</div>
                         </>) : (<>
                             <span className="site-header__divider" aria-hidden="true"></span>
                             <Link className="btn btn--secondary site-header__login" to="/login">Войти</Link>

@@ -1,8 +1,9 @@
 export const getInitials = (fullName) => {
     if (!fullName) return '';
 
+    console.log(fullName)
     const words = fullName.trim().split(' ');
-    const initials = words.map(word => word.charAt(0).toUpperCase());
+    const initials = words.slice(0, 2).map(word => word.charAt(0).toUpperCase());
     return initials.join('');
 }
 
