@@ -3,12 +3,15 @@ import {useEffect, useState} from "react";
 import {getOffer} from "../api/offers.js";
 import {BACKEND_URL} from "../api/client.js";
 import {fuelEnum, gearboxEnum} from "../data/const.js";
-import {getInitials} from "../helpers.js";
+import {getInitials, getColorGradient} from "../helpers.js";
 
 const OfferPage = () => {
     const {id} = useParams();
     const [offer, setOffer] = useState(null);
     const [selectedPhoto, setSelectedPhoto] = useState(0);
+    const [failedPhotos, setFailedPhotos] = useState(new Set());
+
+    const handlePhotoError = (photoId) => setFailedPhotos(prev => new Set([...prev, photoId]));
 
     useEffect(() => {
         getOffer(id)
@@ -58,10 +61,26 @@ const OfferPage = () => {
 
             <div className="listing__gallery-row">
                 <div>
-                    <div className="listing__photo"
-                         style={{backgroundImage: offer.photos?.[selectedPhoto] ? `url(${BACKEND_URL}${offer.photos[selectedPhoto].url})` : 'none'}}></div>
+                    {offer.photos?.map(photo => (
+                        <img key={photo.id} src={`${BACKEND_URL}${photo.url}`} style={{display: 'none'}} onError={() => handlePhotoError(photo.id)} alt=""/>
+                    ))}
+                    {(() => {
+                        const photo = offer.photos?.[selectedPhoto];
+                        const hasPhoto = photo && !failedPhotos.has(photo.id);
+                        return (
+                            <div
+                                className={`listing__photo${!hasPhoto ? ' listing__photo--no-photo' : ''}`}
+                                style={hasPhoto
+                                    ? {backgroundImage: `url(${BACKEND_URL}${photo.url})`}
+                                    : getColorGradient(offer.color)
+                                }
+                            >
+                                {!hasPhoto && <span>Нет фото</span>}
+                            </div>
+                        );
+                    })()}
                     <div className="listing__thumbs">
-                        {offer.photos?.map((photo, i) => (
+                        {offer.photos?.filter(photo => !failedPhotos.has(photo.id)).map((photo, i) => (
                             <div
                                 key={photo.id}
                                 className={`listing__thumb${i === selectedPhoto ? ' is-active' : ''}`}

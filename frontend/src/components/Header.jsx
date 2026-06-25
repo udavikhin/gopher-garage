@@ -4,7 +4,6 @@ import {getInitials} from "../helpers.js";
 
 const Header = () => {
     const {isAuthenticated, user} = useAuth()
-    console.log(user)
 
     return (
         <header className="site-header">

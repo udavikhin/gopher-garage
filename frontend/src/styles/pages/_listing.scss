@@ -59,6 +59,18 @@
     border-radius: $radius-lg;
     background: $bg-muted center/cover no-repeat;
     margin-bottom: $space-3;
+
+    &--no-photo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      span {
+        font-size: 14px;
+        color: $font-tertiary;
+        letter-spacing: 0.04em;
+      }
+    }
   }
 
   &__thumbs {

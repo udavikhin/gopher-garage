@@ -1,6 +1,8 @@
 import {Link} from "react-router-dom";
+import {useState} from "react";
 import {BACKEND_URL} from "../api/client.js";
 import {gearboxEnum} from "../data/const.js";
+import {getColorGradient} from "../helpers.js";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/ru";
@@ -10,16 +12,20 @@ dayjs.locale('ru');
 
 const OfferCard = ({offer}) => {
     dayjs.extend(relativeTime);
+    const [imgError, setImgError] = useState(false);
 
     return (
         <Link className="listing-card" to={`/offers/${offer.id}`}>
-            {offer.photo_url ? (
-                <img className="listing-card__media" src={`${BACKEND_URL}${offer.photo_url}`} alt=""/>
+            {offer.photo_url && !imgError ? (
+                <img
+                    className="listing-card__media"
+                    src={`${BACKEND_URL}${offer.photo_url}`}
+                    alt=""
+                    onError={() => setImgError(true)}
+                />
             ) : (
-                <div className="photo-stub photo-stub--gallery">
-                    <svg className="icon">…</svg>
-                    <span className="photo-stub__title">Фото пока не загружено</span>
-                    <span className="photo-stub__hint">Продавец добавит снимки позже</span>
+                <div className="listing-card__media listing-card__media--no-photo" style={getColorGradient(offer.color)}>
+                    <span>Нет фото</span>
                 </div>
             )}
             <div className="listing-card__body"><span
