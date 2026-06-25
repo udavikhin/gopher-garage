@@ -59,6 +59,29 @@ func (o *OfferService) GetOfferListing() ([]repository.GetAllOffersRow, error) {
 	return o.repo.GetAllOffers(context.Background())
 }
 
+func (o *OfferService) SearchOffers(ctx context.Context, filter offer.GetOffersFilter) ([]repository.GetAllOffersRow, int, error) {
+	perPage := filter.PerPage
+	if perPage <= 0 {
+		perPage = 10
+	}
+	page := filter.Page
+	if page <= 0 {
+		page = 1
+	}
+
+	return o.repo.SearchOffers(ctx, repository.SearchOfferParams{
+		Make:     filter.Make,
+		Model:    filter.Model,
+		PriceMin: filter.PriceMin,
+		PriceMax: filter.PriceMax,
+		YearMin:  filter.YearMin,
+		YearMax:  filter.YearMax,
+		Gearbox:  filter.Gearbox,
+		Page:     page,
+		PerPage:  perPage,
+	})
+}
+
 func (o *OfferService) RemoveOffer(id int) error {
 	if err := o.repo.RemoveOffer(context.Background(), int32(id)); err != nil {
 		return err

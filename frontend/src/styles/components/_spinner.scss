@@ -1,0 +1,46 @@
+@use "../abstracts/variables" as *;
+
+.spinner {
+  --spinner-size: 20px;
+  --spinner-thickness: 2px;
+  --spinner-track: #{$border-default};
+  --spinner-color: #{$brand-primary};
+
+  display: inline-block;
+  width: var(--spinner-size);
+  height: var(--spinner-size);
+  border-radius: 50%;
+  border: var(--spinner-thickness) solid var(--spinner-track);
+  border-top-color: var(--spinner-color);
+  animation: spinner-rotate 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+.spinner--sm  { --spinner-size: 14px; --spinner-thickness: 2px; }
+.spinner--md  { --spinner-size: 20px; --spinner-thickness: 2px; }
+.spinner--lg  { --spinner-size: 32px; --spinner-thickness: 3px; }
+.spinner--xl  { --spinner-size: 48px; --spinner-thickness: 4px; }
+
+.spinner--inverse {
+  --spinner-track: rgba(255, 255, 255, 0.35);
+  --spinner-color: #{$font-inverse};
+}
+
+.spinner-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: inherit;
+  z-index: 10;
+}
+
+@keyframes spinner-rotate {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner { animation-duration: 2s; }
+}

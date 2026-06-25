@@ -13,3 +13,15 @@ type CreateOfferRequest struct {
 	Negotiable  bool   `json:"negotiable"  validate:"required"`
 	Description string `json:"description" validate:"required"`
 }
+
+type GetOffersFilter struct {
+	Make     string `json:"make"`
+	Model    string `json:"model"`
+	PriceMin int    `json:"price_min"`
+	PriceMax int    `json:"price_max"`
+	YearMin  int    `json:"year_min"`
+	YearMax  int    `json:"year_max"`
+	Gearbox  string `json:"gearbox"`
+	Page     int    `json:"page"`
+	PerPage  int    `json:"per_page"`
+}

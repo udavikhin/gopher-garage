@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -173,10 +174,32 @@ func (h *OfferHandler) UploadPhotos(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 }
 
-func (h *OfferHandler) ListOffers(w http.ResponseWriter, r *http.Request) {
-	offers, err := h.services.Offer.GetOfferListing()
+func queryGetInt(q url.Values, key string) int {
+	v, err := strconv.Atoi(q.Get(key))
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Println(err)
+	}
+	return v
+}
+
+func (h *OfferHandler) ListOffers(w http.ResponseWriter, r *http.Request) {
+	query := r.URL.Query()
+
+	filter := offer.GetOffersFilter{
+		Make:     query.Get("make"),
+		Model:    query.Get("model"),
+		Gearbox:  query.Get("gearbox"),
+		PriceMin: queryGetInt(query, "price_min"),
+		PriceMax: queryGetInt(query, "price_max"),
+		YearMin:  queryGetInt(query, "year_min"),
+		YearMax:  queryGetInt(query, "year_max"),
+		Page:     queryGetInt(query, "page"),
+		PerPage:  queryGetInt(query, "per_page"),
+	}
+
+	offers, total, err := h.services.Offer.SearchOffers(r.Context(), filter)
+	if err != nil {
+		http.Error(w, err, http.StatusInternalServerError)
 		log.Println(err)
 		return
 	}
@@ -190,7 +213,10 @@ func (h *OfferHandler) ListOffers(w http.ResponseWriter, r *http.Request) {
 		response[i] = offer.ListOfferResponse{GetAllOffersRow: o, PhotoURL: photoURL}
 	}
 
-	if err := json.NewEncoder(w).Encode(response); err != nil {
+	if err := json.NewEncoder(w).Encode(map[string]any{
+		"offers": response,
+		"total":  total,
+	}); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		log.Println(err)
 	}
