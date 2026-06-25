@@ -3,11 +3,12 @@ import {Link, useNavigate} from "react-router-dom";
 import {createOffer} from "../api/offers.js";
 import carsJSON from "../data/cars.json";
 import colorsJSON from "../data/colors.json";
+import {useFormData} from "../hooks/useFormData.js";
 
 const OfferForm = () => {
     const navigate = useNavigate();
 
-    const [formData, setFormData] = useState({
+    const { formData, handleChange } = useFormData({
         make: '',
         model: '',
         year: null,
@@ -25,14 +26,6 @@ const OfferForm = () => {
     const models = formData.make ? carsJSON.brands[formData.make] : [];
 
     const colors = Object.entries(colorsJSON);
-
-    const handleChange = (e) => {
-        const {name, value, type, checked} = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: type === 'checkbox' ? checked : value
-        }))
-    }
 
     const [error, setError] = useState(null)
 

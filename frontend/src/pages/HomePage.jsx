@@ -7,12 +7,6 @@ const HomePage = () => {
                     <p className="hero__sub">152 348 проверенных объявлений от частных лиц и дилеров по всей России</p>
 
                     <form className="hero__search">
-                        <div className="pill-tabs">
-                            <span className="pill-tabs__item pill-tabs__item--active">Все</span>
-                            <span className="pill-tabs__item">С пробегом</span>
-                            <span className="pill-tabs__item">Новые</span>
-                        </div>
-
                         <div className="hero__fields">
                             <select className="select">
                                 <option>Марка</option>

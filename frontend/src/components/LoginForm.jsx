@@ -1,23 +1,16 @@
 import {useAuth} from "../context/AuthContext.jsx";
 import {useState} from "react";
 import {Link, useNavigate} from "react-router-dom";
+import {useFormData} from "../hooks/useFormData.js";
 
 const LoginForm = () => {
     const {login} = useAuth()
     const navigate = useNavigate();
 
-    const [formData, setFormData] = useState({
+    const { formData, handleChange } = useFormData({
         email: '',
         password: ''
     })
-
-    const handleChange = (e) => {
-        const {name, value} = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }))
-    }
 
     const [error, setError] = useState(null)
 
