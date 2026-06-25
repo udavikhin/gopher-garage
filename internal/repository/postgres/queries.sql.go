@@ -12,8 +12,8 @@ import (
 )
 
 const addOffer = `-- name: AddOffer :one
-INSERT INTO offers (user_id, make, model, year, gearbox, mileage, color, fuel, price, negotiable, description)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+INSERT INTO offers (user_id, make, model, year, gearbox, mileage, color, fuel, price, owners, negotiable, description)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
 RETURNING id
 `
 
@@ -27,6 +27,7 @@ type AddOfferParams struct {
 	Color       pgtype.Text        `json:"color"`
 	Fuel        NullVehicleFuel    `json:"fuel"`
 	Price       pgtype.Int4        `json:"price"`
+	Owners      pgtype.Int2        `json:"owners"`
 	Negotiable  pgtype.Bool        `json:"negotiable"`
 	Description pgtype.Text        `json:"description"`
 }
@@ -42,6 +43,7 @@ func (q *Queries) AddOffer(ctx context.Context, arg AddOfferParams) (int32, erro
 		arg.Color,
 		arg.Fuel,
 		arg.Price,
+		arg.Owners,
 		arg.Negotiable,
 		arg.Description,
 	)

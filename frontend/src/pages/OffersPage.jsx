@@ -1,5 +1,7 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import cars from "../data/cars.json";
+import {getOffer, getOffers} from "../api/offers.js";
+import OfferCard from "../components/OfferCard.jsx";
 
 const OffersPage = () => {
 
@@ -7,6 +9,20 @@ const OffersPage = () => {
 
     const makes = Object.keys(cars.brands);
     const models = selectedMake ? cars.brands[selectedMake] : [];
+
+    const [offers, setOffers] = useState(null);
+
+    useEffect(() => {
+        getOffers()
+            .then(response => {
+                setOffers(response.data)
+            })
+            .catch((e) => {
+                console.log(e)
+            })
+    }, []);
+
+    if (!offers) return <p>Загрузка...</p>;
 
     return (
         <section className="listings">
@@ -71,20 +87,6 @@ const OffersPage = () => {
                     </div>
 
                     <div className="filter-card__group">
-                        <h4>Тип кузова</h4>
-                        <div className="filter-card__options">
-                            <label className="checkbox"><input type="checkbox" defaultChecked/><span className="box"></span>Седан</label>
-                            <label className="checkbox"><input type="checkbox"/><span className="box"></span>Внедорожник</label>
-                            <label className="checkbox"><input type="checkbox"/><span
-                                className="box"></span>Хэтчбек</label>
-                            <label className="checkbox"><input type="checkbox"/><span
-                                className="box"></span>Универсал</label>
-                            <label className="checkbox"><input type="checkbox"/><span
-                                className="box"></span>Купе</label>
-                        </div>
-                    </div>
-
-                    <div className="filter-card__group">
                         <h4>Коробка передач</h4>
                         <div className="filter-card__options">
                             <label className="radio"><input type="radio" name="gear" defaultChecked/><span
@@ -93,78 +95,13 @@ const OffersPage = () => {
                         </div>
                     </div>
 
-                    <button className="btn btn--primary btn--block">Показать 847 объявлений</button>
+                    <button className="btn btn--primary btn--block">Показать</button>
                 </aside>
 
                 <div className="grid-3">
-                    <a className="listing-card" href="listing.html"><img className="listing-card__media"
-                                                                         src="assets/images/cars/bmw-320i.jpg" alt=""/>
-                        <div className="listing-card__body"><span
-                            className="listing-card__price">3 290 000 ₽</span><span className="listing-card__title">BMW 320i xDrive, 2021</span><span
-                            className="listing-card__meta">42 800 км · Автомат</span><span
-                            className="listing-card__location">Москва · сегодня</span></div>
-                    </a>
-                    <a className="listing-card" href="listing.html"><img className="listing-card__media"
-                                                                         src="assets/images/cars/toyota-camry.jpg"
-                                                                         alt=""/>
-                        <div className="listing-card__body"><span
-                            className="listing-card__price">2 450 000 ₽</span><span className="listing-card__title">Toyota Camry 2.5 AT, 2019</span><span
-                            className="listing-card__meta">68 400 км · Автомат</span><span
-                            className="listing-card__location">Москва · вчера</span></div>
-                    </a>
-                    <a className="listing-card" href="listing.html"><img className="listing-card__media"
-                                                                         src="assets/images/cars/hyundai-solaris.jpg"
-                                                                         alt=""/>
-                        <div className="listing-card__body"><span
-                            className="listing-card__price">1 180 000 ₽</span><span className="listing-card__title">Hyundai Solaris 1.6 MT, 2020</span><span
-                            className="listing-card__meta">54 100 км · Механика</span><span
-                            className="listing-card__location">Москва · 2 дня назад</span></div>
-                    </a>
-                    <a className="listing-card" href="listing.html"><img className="listing-card__media"
-                                                                         src="assets/images/cars/audi-a4.jpg" alt=""/>
-                        <div className="listing-card__body"><span
-                            className="listing-card__price">2 850 000 ₽</span><span className="listing-card__title">Audi A4 2.0 TFSI, 2020</span><span
-                            className="listing-card__meta">61 200 км · Автомат</span><span
-                            className="listing-card__location">Москва · 3 дня назад</span></div>
-                    </a>
-                    <a className="listing-card" href="listing.html"><img className="listing-card__media"
-                                                                         src="assets/images/cars/lada-vesta.jpg"
-                                                                         alt=""/>
-                        <div className="listing-card__body"><span
-                            className="listing-card__price">1 380 000 ₽</span><span className="listing-card__title">Lada Vesta 1.6 MT, 2022</span><span
-                            className="listing-card__meta">19 800 км · Механика</span><span
-                            className="listing-card__location">Москва · 4 дня назад</span></div>
-                    </a>
-                    <a className="listing-card" href="listing.html"><img className="listing-card__media"
-                                                                         src="assets/images/cars/vw-polo.jpg" alt=""/>
-                        <div className="listing-card__body"><span
-                            className="listing-card__price">1 290 000 ₽</span><span className="listing-card__title">Volkswagen Polo 1.6 AT, 2019</span><span
-                            className="listing-card__meta">71 500 км · Автомат</span><span
-                            className="listing-card__location">Москва · 5 дней назад</span></div>
-                    </a>
-                    <a className="listing-card" href="listing.html"><img className="listing-card__media"
-                                                                         src="assets/images/cars/kia-rio.jpg" alt=""/>
-                        <div className="listing-card__body"><span
-                            className="listing-card__price">1 050 000 ₽</span><span className="listing-card__title">Kia Rio 1.4 AT, 2018</span><span
-                            className="listing-card__meta">82 300 км · Автомат</span><span
-                            className="listing-card__location">Москва · 6 дней назад</span></div>
-                    </a>
-                    <a className="listing-card" href="listing.html"><img className="listing-card__media"
-                                                                         src="assets/images/cars/mercedes-e.jpg"
-                                                                         alt=""/>
-                        <div className="listing-card__body"><span
-                            className="listing-card__price">2 950 000 ₽</span><span className="listing-card__title">Mercedes-Benz E 200, 2018</span><span
-                            className="listing-card__meta">94 100 км · Автомат</span><span
-                            className="listing-card__location">Москва · неделю назад</span></div>
-                    </a>
-                    <a className="listing-card" href="listing.html"><img className="listing-card__media"
-                                                                         src="assets/images/cars/ford-focus.jpg"
-                                                                         alt=""/>
-                        <div className="listing-card__body"><span
-                            className="listing-card__price">1 120 000 ₽</span><span className="listing-card__title">Ford Focus 1.6 MT, 2017</span><span
-                            className="listing-card__meta">103 700 км · Механика</span><span
-                            className="listing-card__location">Москва · 8 дней назад</span></div>
-                    </a>
+                    {offers.map((offer) => (
+                        <OfferCard offer={offer} />
+                    ))}
                 </div>
             </div>
 

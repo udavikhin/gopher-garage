@@ -5,8 +5,8 @@ SELECT * FROM offers;
 SELECT * FROM offers WHERE id = $1;
 
 -- name: AddOffer :one
-INSERT INTO offers (user_id, make, model, year, gearbox, mileage, color, fuel, price, negotiable, description)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+INSERT INTO offers (user_id, make, model, year, gearbox, mileage, color, fuel, price, owners, negotiable, description)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
 RETURNING id;
 
 -- name: RemoveOffer :exec

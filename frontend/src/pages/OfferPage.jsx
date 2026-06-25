@@ -111,6 +111,10 @@ const OfferPage = () => {
                         <div className="specs-card__item-value">{offer.mileage.toLocaleString()} км</div>
                     </div>
                     <div className="specs-card__item">
+                        <div className="specs-card__item-label">Владельцев по ПТС</div>
+                        <div className="specs-card__item-value">{offer.owners}</div>
+                    </div>
+                    <div className="specs-card__item">
                         <div className="specs-card__item-label">Цвет</div>
                         <div className="specs-card__item-value">{offer.color}</div>
                     </div>

@@ -2,10 +2,12 @@ package handler
 
 import (
 	"encoding/json"
+	"errors"
 	"log"
 	"net/http"
 	"strconv"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/udavikhin/gopher-garage/internal/api/handler/offer"
 	"github.com/udavikhin/gopher-garage/internal/api/handler/user"
 	"github.com/udavikhin/gopher-garage/internal/domain"
@@ -65,6 +67,11 @@ func (h *OfferHandler) GetOffer(w http.ResponseWriter, r *http.Request) {
 	}
 	offerInfo, userInfo, err := h.services.Offer.GetOfferInfo(r.Context(), offerId)
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			http.Error(w, err.Error(), http.StatusNotFound)
+			log.Println(err)
+			return
+		}
 		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
 		log.Println(err)
 		return

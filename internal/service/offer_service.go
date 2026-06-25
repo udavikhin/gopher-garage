@@ -29,6 +29,7 @@ func (o *OfferService) CreateOffer(offerData offer.CreateOfferRequest, userID in
 		Color:       pgtype.Text{String: offerData.Color, Valid: true},
 		Fuel:        repository.NullVehicleFuel{VehicleFuel: repository.VehicleFuel(offerData.Fuel), Valid: true},
 		Price:       pgtype.Int4{Int32: int32(offerData.Price), Valid: true},
+		Owners:      pgtype.Int2{Int16: int16(offerData.Owners), Valid: true},
 		Negotiable:  pgtype.Bool{Bool: offerData.Negotiable, Valid: true},
 		Description: pgtype.Text{String: offerData.Description, Valid: true},
 	})
